@@ -1,0 +1,49 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+/*NAV------------------------------------------------------------*/
+#time{
+  position: relative;
+  height: 15px;
+  width: 40px;
+  border: 1px solid;
+  
+
+}
+
+/*BOX------------------------------------------------------------*/
+.container{
+  position: absolute;
+  margin: 10px;
+  padding: 0px;
+  border: 2px solid;
+  width: 25%;
+  height: 90%;
+}
+
+/*Process------------------------------------------------------------*/
+.box{
+  border-bottom: 2px solid;
+  position: relative;
+
+}
+.container .Item{
+  margin: 10px 0px;
+  padding-right: 20px;
+  padding-left: 10px;
+}
+.container .Title {
+  margin: 0px;
+
+}
+
+/*Propieties----------------------------------------------------------*/
+.oculto{
+  display: none;
+
+}
+.block{
+  display: block;
+}
