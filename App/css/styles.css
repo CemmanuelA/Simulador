@@ -4,22 +4,17 @@
 }
 
 /*NAV------------------------------------------------------------*/
-#time{
-  position: relative;
-  height: 15px;
-  width: 40px;
-  border: 1px solid;
+#nav{
   
-
+  
 }
+
 
 /*BOX------------------------------------------------------------*/
 .container{
   position: absolute;
-  margin: 10px;
   padding: 0px;
   border: 2px solid;
-  width: 25%;
   height: 90%;
 }
 
@@ -39,11 +34,18 @@
 
 }
 
-/*Propieties----------------------------------------------------------*/
-.oculto{
-  display: none;
+/*Modal----------------------------------------------------------*/
+.modal-body{
+  overflow-y: auto;
+  max-height: 90%;
+  
+}
 
-}
-.block{
+.btn-submit{
   display: block;
+  margin:auto;
+  width:160px;
 }
+
+
+

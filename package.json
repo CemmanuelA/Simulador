@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "concurrently \"node server.js\" \"webpack -w\" "
+    "dev": "concurrently \"node server.js\" \"webpack -w\" ",
+    "web": "webpack -w"
   },
   "author": "",
   "license": "ISC",
