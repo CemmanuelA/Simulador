@@ -14,16 +14,14 @@
 .container{
   position: absolute;
   padding: 0px;
-  border: 2px solid;
   height: 90%;
+  border: 1px solid;
+  cursor: pointer;
+  
 }
 
 /*Process------------------------------------------------------------*/
-.box{
-  border-bottom: 2px solid;
-  position: relative;
 
-}
 .container .Item{
   margin: 10px 0px;
   padding-right: 20px;
@@ -34,12 +32,14 @@
 
 }
 
-/*Modal----------------------------------------------------------*/
-.modal-body{
-  overflow-y: auto;
-  max-height: 90%;
-  
+/*Modals----------------------------------------------------------*/
+.modalContent{
+  display: block;
+  padding: 10px 50px;
+  overflow-y: scroll !important;
 }
+
+
 
 .btn-submit{
   display: block;

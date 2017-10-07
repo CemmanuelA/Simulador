@@ -1,7 +1,7 @@
 import React from 'react';
 
 
-export var Properties = (props) => {
+export const Properties = (props) => {
   if (!props.show) {
     return null;
   }
