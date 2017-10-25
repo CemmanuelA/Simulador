@@ -1,27 +1,56 @@
 import React from 'react';
-import { Process } from '../Presentational/Process.jsx'
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 
-export class ContainerProcess extends React.Component{
-    
-     constructor(props){
-        super(props);
-        this.state = { properties: false,
-                        name:''
-        };
-        this.handleToggle = this.handleToggle.bind(this);
-    }
-//---------------------------------------------------------------------------------------------------------------------------------------------------
 
-    handleToggle(){
-        this.setState(prevState =>({
-          properties: !prevState.properties
-        }));
-    }
+import Process  from '../Presentational/Process.jsx';
+
+
+
+
+
+
+const mapStateToProps = state => {
     
+    return{
+        collection: state.machine.collection,
+    };
     
+};
+
+
+const  updateMachine = id => dispatch =>{
+           
+                dispatch({type:"UPDATE_MACHINE",
+                      id:id}).then(()=>dispatch({type:"SHOW_MACHINE",show:true}));
+        }
+
+const mapDispatchToProps = dispatch =>{
     
+    return{
+        
+        handleProperties(id){
+            dispatch({type:"SHOW_PROPERTIES",
+                      id:id});
+        },
+       updateMachine(id){
+           
+                dispatch({type:"UPDATE_MACHINE",
+                      id:id}),
+                      
+                dispatch({type:"SHOW_MACHINE",show:true});
+        },        
+       
+       deleteMachine(id){
+            dispatch({type:"DELETE_MACHINE",
+                      id:id})
+        }
     
-    render(){
-        return <Process />
-    }
-}
+    };
+};
+
+
+
+const ContainerProcess = connect(mapStateToProps,mapDispatchToProps)(Process);
+
+export default ContainerProcess;

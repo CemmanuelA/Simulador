@@ -1,6 +1,6 @@
 import React from 'react';
-import  showMachine  from '../../../actionCreators.jsx';
 import {Button ,Modal, Form, FormGroup, FormControl, ControlLabel, HelpBlock, Col, Row} from 'react-bootstrap';
+
 import { InOut } from './InOut.jsx';
 
 
@@ -14,7 +14,7 @@ function range(num) {
     return result;
 }
 
-export const Machine = ({show, inputs, outputs, name, inSelected,outSelected,close, handleInputChange, handleSubmit}) =>{
+const Machine = ({show, inputs, outputs, name, inSelected,outSelected,close, handleInputChange, handleSubmit,update}) =>{
 
     return(
     
@@ -32,8 +32,7 @@ export const Machine = ({show, inputs, outputs, name, inSelected,outSelected,clo
 
             <Modal.Body className="modalContent" >
          
-             
-                <Form horizontal onSubmit={(event) => handleSubmit(event)}>
+                <Form horizontal onSubmit={(event) => { handleSubmit(event) ; close()}}>
                     
                      <Row>
                          <Col sm={11} md={11} lg={11}>
@@ -88,19 +87,23 @@ export const Machine = ({show, inputs, outputs, name, inSelected,outSelected,clo
                         <Col md={4} lg={4} mdOffset={1} lgOffset={1}>
                         {
                             range(inputs).map((i) => (
-                                  <InOut key={i} index={i} type={'Entrada '+i} name="inSelected" value={inSelected[i] || "agua"} handleInputChange={handleInputChange}/> ))}
+                                  <InOut key={i} index={i} type={'Entrada '+i} name="inSelected" value={inSelected[i] || "agua"} handleInputChange={handleInputChange}/> ))
+                            
+                        }
                                   
                         </Col>
                     
                         <Col md={4} lg={4} mdOffset={1} lgOffset={1}>
                         {
                             range(outputs).map((i) => (
-                                  <InOut key={i} index={i} type={'Salida '+i} name="outSelected" value={outSelected[i] || "agua"} handleInputChange={handleInputChange}/>))}
+                              <InOut key={i} index={i} type={'Salida '+i} name="outSelected" value={outSelected[i] || "agua"} handleInputChange={handleInputChange}/>))
+                            
+                        }
                         </Col>
                   </Row>
                     
                   
-                   <Button type="submit"  value="Submit" bsStyle="success" className="btn-submit">Crear</Button>
+                   <Button type="submit"  value="Submit" bsStyle="success" className="btn-submit">{update ? 'Modificar' : 'Crear'}</Button>
                   
                 </Form>
 

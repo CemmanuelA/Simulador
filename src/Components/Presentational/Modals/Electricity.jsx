@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import {Button ,Modal} from 'react-bootstrap';
 
-class OtherProcess extends React.Component{
+class Electricity extends React.Component{
 
   render(){
     return(
@@ -33,7 +33,7 @@ class OtherProcess extends React.Component{
 const mapStateToProps = state =>{
     
        return{
-            show: state.show.showProcess
+            show: state.show.showElectricity
        };
 } ;
 
@@ -41,9 +41,9 @@ const mapDispatchToProps = dispatch =>{
   
     return{
          close(){
-            dispatch({type:"SHOW_OTHER_PROCESS",show:false});
+            dispatch({type:'SHOW_ELECTRICITY',show:false});
         }
     };  
 };
 
-export default connect(mapStateToProps,mapDispatchToProps)(OtherProcess);
+export default connect(mapStateToProps,mapDispatchToProps)(Electricity);

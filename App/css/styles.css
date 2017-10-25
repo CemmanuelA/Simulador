@@ -3,34 +3,46 @@
   padding: 0;
 }
 
-/*NAV------------------------------------------------------------*/
+
+/*nav--------------------------------------------------------------------*/
+
 #nav{
-  
+  clear:both;
   
 }
 
 
-/*BOX------------------------------------------------------------*/
+/*DropZone-----------------------------------------------------------*/
+.dropZone{
+  position: absolute;
+  height: 93%;
+  width: 83%;
+  right: 0px;
+  
+}
+/*Process------------------------------------------------------------*/
 .container{
   position: absolute;
   padding: 0px;
-  height: 90%;
+  height: 93%;
+  width: 17%;
   border: 1px solid;
   cursor: pointer;
+  z-index: 1;
   
 }
-
-/*Process------------------------------------------------------------*/
-
-.container .Item{
-  margin: 10px 0px;
-  padding-right: 20px;
-  padding-left: 10px;
+.panel-body{
+  padding:0px 
 }
-.container .Title {
+.list-group-item{
   margin: 0px;
-
+  font-size:15px;
+  font-weight: bold;
 }
+.list-item {
+ display: inline-block;
+}
+
 
 /*Modals----------------------------------------------------------*/
 .modalContent{

@@ -32,7 +32,8 @@ const mapStateToProps = state =>{
               inputs: state.machine.inputs,
               outputs: state.machine.outputs,
               inSelected: state.machine.inSelected,
-              outSelected: state.machine.outSelected
+              outSelected: state.machine.outSelected,
+              update: state.machine.update
                       
         };
 };
