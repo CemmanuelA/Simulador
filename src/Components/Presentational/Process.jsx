@@ -21,17 +21,17 @@ const Process = ({collection, handleProperties, updateMachine, deleteMachine}) =
         return(
             <div className="container">
                  <PanelGroup>
-                    <Panel collapsible header="Máquinas" eventKey="1">
+                    <Panel expanded={true} header="Máquinas" eventKey="1" className='panelTab' bsStyle="primary">
                         
                         <ListGroup>
-                        {list(collection.length).map((i) =>( <DragItemList key={i} id={i} collection={collection} handleProperties={handleProperties} 
+                        {list(collection.length).map((i) =>( <DragItemList key={i} index={i} collection={collection} handleProperties={handleProperties} 
                                                                     deleteMachine={deleteMachine} updateMachine={updateMachine} />))}
                                                                     
                         </ListGroup>
                      
                     </Panel>
-                    <Panel collapsible header="Otros procesos" eventKey="2">Panel 2 content</Panel>
-                    <Panel collapsible header="Propiedades" eventKey="3"><Properties/></Panel>
+                    <Panel collapsible header="Otros procesos" eventKey="2" className='panelTab' bsStyle="primary">Panel 2 content</Panel>
+                    <Panel expanded={true} header="Propiedades" eventKey="3" bsStyle="primary"><Properties/></Panel>
                 </PanelGroup>
            
                 

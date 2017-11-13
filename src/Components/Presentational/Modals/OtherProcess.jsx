@@ -33,7 +33,8 @@ class OtherProcess extends React.Component{
 const mapStateToProps = state =>{
     
        return{
-            show: state.show.showProcess
+            show: state.show.showProcess,
+            
        };
 } ;
 

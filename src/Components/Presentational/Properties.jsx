@@ -66,9 +66,10 @@ function type(op){
 
         
     }
+    //{type(collection[show].inSelected[indexIn])}
 }
 
-var Properties = ({show, collection,valueIn,valueOut, handleInputChange,indexIn,indexOut}) => {
+var Properties = ({show, collection,valueIn,valueOut, handleInputChange,indexIn,indexOut,handleExpressionChange}) => {
         
     
 
@@ -76,7 +77,7 @@ var Properties = ({show, collection,valueIn,valueOut, handleInputChange,indexIn,
      if(collection.length > 0 && show != null){
        return (
            <Form>
-              <h4>Propiedades de máquina<strong>{" " + collection[show].name }</strong></h4>
+              <h4><strong>{collection[show].name }</strong></h4>
               <FormGroup>
                  
                   <FormControl componentClass="select" name="valueIn" value={valueIn} onChange={(event) => handleInputChange(event,collection[show].inputs)}>
@@ -88,7 +89,7 @@ var Properties = ({show, collection,valueIn,valueOut, handleInputChange,indexIn,
                  </FormControl>
                  <ControlLabel>Tipo: {" "+collection[show].inSelected[indexIn].toUpperCase()} </ControlLabel>
               </FormGroup>
-              {type(collection[show].inSelected[indexIn])}
+              
               
               <FormGroup>
                   <FormControl componentClass="select" name="valueOut" value={valueOut} onChange={(event) => handleInputChange(event,collection[show].outputs)}>
@@ -96,9 +97,16 @@ var Properties = ({show, collection,valueIn,valueOut, handleInputChange,indexIn,
                         
                             return <option key={i} value={i}>{i}</option>;
                         })}
-                    
                   </FormControl>
                   <ControlLabel>Tipo: {" "+collection[show].outSelected[indexOut].toUpperCase()} </ControlLabel>
+                  <FormControl
+                                    type="text"
+                                    value={collection[show].expresions[indexOut]}
+                                    placeholder="Formula"
+                                    onChange={(event) => handleExpressionChange(event,show,indexOut)}
+                                   
+                                   
+                                />
               
               </FormGroup>
                          
@@ -135,6 +143,9 @@ const mapDispatchToProps = dispatch =>{
                       event:event,
                       limit:limit
             })
+        },
+        handleExpressionChange(e,indexM,indexO){
+            dispatch({type:'CHANGE_EXPRESSION',e:e,indexM:indexM,indexO:indexO});
         }
         
     };

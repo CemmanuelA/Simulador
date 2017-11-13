@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { dragSource } from 'react-dnd';
 import flow from 'lodash/flow';
 import { DragSource } from 'react-dnd';
 import { connect }    from 'react-redux';
@@ -9,83 +10,58 @@ import { ItemTypes } from '../../ItemTypes.jsx';
 import DragItemCout from './DragItemCout.jsx';
 import DragItemCin from './DragItemCin.jsx'
 
-class DragItemZone extends React.Component{
 
-    
-    componentWillMount(){
-             const {dragItem, index, createConnector,createCollection} = this.props;
-             const id = dragItem[index].id;
-             range(dragItem[index].inSelected.length).map((i) => createConnector(id,'input',i));
-             range(dragItem[index].outSelected.length).map((i) => createConnector(id,'output',i));
+class DragItemElectricity extends React.Component{
+      
+          componentWillMount(){
+             const {dragItemElectricity, index, createConnector,createCollection} = this.props;
+             const id = dragItemElectricity[index].id;
+             range(dragItemElectricity[index].inputs).map((i) => createConnector(id,'input',i));
+             range(dragItemElectricity[index].outputs).map((i) => createConnector(id,'output',i));
              createCollection(id);
              this.dragRefIn = [];
              this.dragRefOut = [];
         }
 /*-------------------------------------------------------------------------------------------------------*/
     componentDidMount(){
-             const {dragItem, index, updateConnectorPosition} = this.props;
-             const id = dragItem[index].id;
+             const {dragItemElectricity, index, updateConnectorPosition} = this.props;
+             const id = dragItemElectricity[index].id;
              const topParent = ReactDOM.findDOMNode(this).offsetTop;
              const leftParent = ReactDOM.findDOMNode(this).offsetLeft;
-            range(dragItem[index].inSelected.length).map((i) => {
+              range(dragItemElectricity[index].inputs).map((i) => {
                  const topChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetTop;
                  const leftChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetLeft;
-                 console.log(topChild+topParent,leftChild+leftParent,'entrada'+i)
+                 console.log(topChild,leftChild,'entrada'+i)
                  updateConnectorPosition(id,i,'input',topParent+topChild,leftParent+leftChild)});
                  
-             range(dragItem[index].outSelected.length).map((i) => {
+             range(dragItemElectricity[index].outputs).map((i) => {
                  const topChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetTop;
                  const leftChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetLeft;
-                 console.log(topChild+topParent,leftChild+leftParent,'salida'+i)
+                 console.log(topChild,leftChild,'salida'+i)
                  updateConnectorPosition(id,i,'output',topParent+topChild,leftParent+leftChild)});
-            this.props.handleRefs(this.dragRefIn,this.dragRefOut,'machine'); 
-
+            this.props.handleRefs(this.dragRefIn,this.dragRefOut,'electricity'); 
         }
 /*-------------------------------------------------------------------------------------------------------*/
     shouldComponentUpdate(nextProps, nextState) {
             if ((this.props.top != nextProps.top ) || (this.props.left != nextProps.left) 
-                 || (this.props.update == true && nextProps.update == false) ) {
+                || this.props.Connectors != nextProps.Connectors) {
               
               return true;
             } 
             return false;       
     }
-/*-------------------------------------------------------------------------------------------------------
-     componentDidUpdate(nextProps){
-         const {dragItem, index, createConnector,createCollection,updateConnectorPosition} = nextProps;
-         const id = dragItem[index].id;
-         range(dragItem[index].inSelected.length).map((i) => createConnector(id,'input',i));
-         range(dragItem[index].outSelected.length).map((i) => createConnector(id,'output',i));
-         createCollection(id);
-         console.log(dragItem[index].inSelected.length)
-         const topParent = ReactDOM.findDOMNode(this).offsetTop;
-         const leftParent = ReactDOM.findDOMNode(this).offsetLeft;
-            range(dragItem[index].inSelected.length).map((i) => {
-                 const topChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetTop;
-                 const leftChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetLeft;
-                 console.log(topChild+topParent,leftChild+leftParent,'entrada'+i)
-                 updateConnectorPosition(id,i,'input',topParent+topChild,leftParent+leftChild)});
-                 
-             range(dragItem[index].outSelected.length).map((i) => {
-                 const topChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetTop;
-                 const leftChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetLeft;
-                 console.log(topChild+topParent,leftChild+leftParent,'salida'+i)
-                 updateConnectorPosition(id,i,'output',topParent+topChild,leftParent+leftChild)});
-            this.props.handleRefs(this.dragRefIn,this.dragRefOut,'machine'); 
-     }*/
-	
-    render(){
-        const {connectDragSource,index,dragItem,createLine,Connectors,updateConnectorPosition} = this.props;
-        const id = dragItem[index].id;
-        console.log(Connectors)
-        return(connectDragSource(<div style={style(dragItem[index])} key={index}> 
     
-    							<div className='containerFlex'>
-        							   <div>{range(dragItem[index].inSelected.length).map( i =>
+    render(){
+         const {connectDragSource,index,dragItemElectricity,createLine,Connectors,updateConnectorPosition} = this.props;
+         const id = dragItemElectricity[index].id;
+        return(connectDragSource(<div style={style(dragItemElectricity[index])} key={index}> 
+    
+    							<div className='containerFlex adderInput'>
+        							   <div>{range(dragItemElectricity[index].inputs).map( i =>
                 							   {
-                							    return  <DragItemCin key={i}  ref={(ref) => this.dragRefIn[i] = ref} index={i} 
+                							    return  <DragItemCin key={i} ref={(ref) => this.dragRefIn[i] = ref} index={i} 
                 							                         indexDragI={index} Connectors={Connectors}
-                							                         itemSource={dragItem} createLine={createLine}>
+                							                         itemSource={dragItemElectricity} createLine={createLine}>
                 							             </DragItemCin>;
 
                 							   })}
@@ -93,22 +69,22 @@ class DragItemZone extends React.Component{
     							   
     							 </div>
     							 
-    							 <div className='containerFlex center'>
-        							   <div>{dragItem[index].name}</div>
+    							 <div className='containerFlex center adderCenter'>
+        							   <div><h4>{dragItemElectricity[index].name}</h4></div>
         							   
         							   <div className="icons">
-        							        <Glyphicon glyph="cog"/>
         							        <Glyphicon glyph="trash"/>
         							   </div>
     							 </div>
     							 
-    							 <div className='containerFlex'>
+    							 <div className='containerFlex adderOutput'>
     							 
-        							 <div>{range(dragItem[index].outSelected.length).map( i =>
+        							 <div>{range(dragItemElectricity[index].outputs).map( i =>
                 							   {
+                							   let ref = id +'_Out_' + i;
                 							    return  <DragItemCout key={i} ref={(ref) => this.dragRefOut[i] = ref} index={i} 
                 							                          indexDragI={index} Connectors={Connectors}
-                							                          itemSource={dragItem}>
+                							                          itemSource={dragItemElectricity} >
                 							            </DragItemCout>;   
                 							   })}
     							    </div>
@@ -116,13 +92,7 @@ class DragItemZone extends React.Component{
     							
     						</div>));
     }
-    						
-    						
-    						
-};
-
-
-
+}
 
 const range = (num) =>{
     let array = [];
@@ -137,16 +107,16 @@ const range = (num) =>{
 
 
 const style = (array) => {
-	let height = 50;
+	let height = 60;
 	let left = array.left.toString();
 	let top = array.top.toString();
 	
-	if(array.inSelected.length > array.outSelected.length ){
-	    for (let i = 1 ;i < array.inSelected.length ; i++ ) {
+	if(array.inputs > array.outputs ){
+	    for (let i = 1 ;i < array.inputs ; i++ ) {
 	        height = height + 14;
 	    }
 	}else{
-	    for (let i = 1 ;i < array.outSelected.length ; i++ ) {
+	    for (let i = 1 ;i < array.outputs ; i++ ) {
 	        height = height + 14;
 	    }
 	}
@@ -155,15 +125,16 @@ const style = (array) => {
     	display:'flex',
     	flexDirection:'row',
     	position: 'absolute',
-    	border: '1px solid gray',
+    	border: '1px solid black',
     	padding: '0.5rem 1rem',
     	textAlign: 'center',
     	padding:'0px',
     	cursor: 'move',
-    	width: '140px',
+    	width: '100px',
+    	borderRadius: '25px',
     	height: height.toString() + 'px',
-	    left: left +'px',
-	    top: top +'px'
+	left: left +'px',
+	top: top +'px'
 	    
 	};
 	
@@ -172,10 +143,10 @@ const style = (array) => {
 
 const zoneSource = {
     beginDrag(props){
-        let source = 'machineZone';
+        let source = 'electricityZone';
         let id;
-        const { index, dragItem } = props;
-        id = dragItem[index].id;
+        const { index, dragItemElectricity } = props;
+        id = dragItemElectricity[index].id;
         return { id, index, source};
     }
 };
@@ -237,4 +208,4 @@ const mapDispatchToProps = dispatch =>{
 
 
 
-export default flow(DragSource(ItemTypes.MACHINE,zoneSource,collect),connect(mapStateToProps,mapDispatchToProps,null,{ withRef: true }))(DragItemZone);
+export default flow(DragSource(ItemTypes.ADDER_WATER,zoneSource,collect),connect(mapStateToProps,mapDispatchToProps))(DragItemElectricity);

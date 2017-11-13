@@ -2,11 +2,15 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import showReducer from './Reducers/showReducer.jsx';
 import machineReducer from './Reducers/machineReducer.jsx';
 import propertiesReducer from './Reducers/propertiesReducer.jsx';
+import connectorsReducer from './Reducers/connectorsReducer.jsx';
+import adderReducer from './Reducers/adderReducer.jsx';
 
 const reducers = combineReducers({
     show: showReducer,
     machine: machineReducer,
-    properties: propertiesReducer
+    properties: propertiesReducer,
+    connector: connectorsReducer,
+    adder: adderReducer
 });
 
 /*const thunk = store => next => action =>{

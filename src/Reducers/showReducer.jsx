@@ -20,21 +20,29 @@ const showReducer= (state = {
         case 'SHOW_OTHER_PROCESS':{
             return {showProcess: action.show};
         }
-        case 'SHOW_PROPERTIES':
+        case 'SHOW_PROPERTIES':{
             
             return{ showProperties: action.id};
             
-         case 'SHOW_WATER':
+        }
+            
+         case 'SHOW_WATER':{
             
             return{ showWater: action.show};
+             
+         }
             
-        case 'SHOW_GAS':
+        case 'SHOW_GAS':{
             
             return{ showGas: action.show};
             
-        case 'SHOW_ELECTRICITY':
+        }
+            
+        case 'SHOW_ELECTRICITY':{
             
             return{ showElectricity: action.show};
+            
+        }
             
             
             

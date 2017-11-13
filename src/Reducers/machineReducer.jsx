@@ -7,8 +7,25 @@ const initialState = {
     outSelected:["agua"],
     collection: [],
     dragItem: [],
-    machineId: 0,
-    update:false
+    process:'P1',
+    index:0,
+    update:false,
+    rangeF:{
+        min:100,
+        max:500
+    },
+    rangeT:{
+        min:50,
+        max:150
+    },
+    rangeA:{
+        min:100,
+        max:400
+    },
+    rangeV:{
+        min:100,
+        max:300
+    }
 };
 
 
@@ -33,9 +50,11 @@ const machineReducer= (state = initialState, action) => {
     let x = null;
     let y = null;
     let sw = null;
-    
+    let index = null;
+    const valParams = [];
+    const expresions = [];
     switch (action.type) {
-        
+       
         case 'CREATE_MACHINE':
                     
                    action.event.preventDefault();
@@ -70,23 +89,70 @@ const machineReducer= (state = initialState, action) => {
                                 inSelected:["agua"],
                                 outSelected:["agua"],
                                 update:false
-                       })
+                       });
                        
                    }else{
+                       
+                       
+                       for (let i = 0; i < state.inputs ; i++) {
+                                
+                              const flow = [];
+                              const temperature = [];
+                              const volts = [];
+                              const amperage = [];
+                              if(state.inSelected[i] === "agua"){
+                                  for(let j = 0; j < 100 ; j++) {
+                                        
+                                    flow.push(Math.round(Math.random() * (state.rangeF.max - state.rangeF.min) + state.rangeF.min));
+                                    temperature.push(Math.round(Math.random() * (state.rangeT.max - state.rangeT.min) + state.rangeT.min));
+                              
+                                    }
+                               valParams.push({flow,temperature}); 
+                              }else{
+                                  if(state.inSelected[i] === "gas"){
+                                      
+                                      for(let j = 0; j < 100 ; j++) {
+                                        
+                                        flow.push(Math.round(Math.random() * (state.rangeF.max - state.rangeF.min) + state.rangeF.min));
+                                        temperature.push(Math.round(Math.random() * (state.rangeT.max - state.rangeT.min) + state.rangeT.min));
+                              
+                                    }
+                                    valParams.push({flow,temperature}); 
+                                      
+                                  }else{
+                                      if(state.inSelected[i] === "electricidad"){
+                                          
+                                          for(let j = 0; j < 100 ; j++) {
+                                        
+                                            amperage.push(Math.round(Math.random() * (state.rangeA.max - state.rangeA.min) + state.rangeA.min));
+                                            volts.push(Math.round(Math.random() * (state.rangeV.max - state.rangeV.min) + state.rangeV.min));
+                              
+                                            }
+                                          valParams.push({amperage,volts});     
+                                      }
+                                  }
+                              } 
+                           
+                       }
+                       
+                       for (let i =0;i < state.outputs; i++) {
+                           expresions.push('');
+                       }
+                       
+                       
+                       id = state.process + '-' + state.index.toString();
                             return {
                                     collection: [
                                       ...state.collection,
                                       {
-                                          machineId: state.machineId,
+                                          machineId: id,
                                           name: state.name,
                                           inputs: state.inputs,
                                           outputs: state.outputs,
                                           inSelected: state.inSelected,
                                           outSelected: state.outSelected,
-                                          temperature:[],
-                                          flow: [],
-                                          volts: [],
-                                          amperage: [],
+                                          valParams: valParams,
+                                          expresions: expresions
                                           
                                       }
                                     ],
@@ -95,9 +161,26 @@ const machineReducer= (state = initialState, action) => {
                                     outputs: 1,
                                     inSelected:["agua"],
                                     outSelected:["agua"],
-                                    machineId:state.machineId+1,
+                                    process:'P1',
+                                    index:state.index + 1,
                                     dragItem: [ ...state.dragItem ],
-                                    update:false
+                                    update:false,
+                                    rangeF:{
+                                        min:100,
+                                        max:500
+                                    },
+                                    rangeT:{
+                                        min:50,
+                                        max:150
+                                    },
+                                    rangeA:{
+                                        min:100,
+                                        max:400
+                                    },
+                                    rangeV:{
+                                        min:100,
+                                        max:300
+                                    }
                             
                         };
                        
@@ -206,12 +289,12 @@ const machineReducer= (state = initialState, action) => {
                     id = action.id;
                     x = action.left;
                     y = action.top;
-                    let index = state.dragItem.length;
+                    let idDragM = 'dragM'+state.dragItem.length;
                     return Object.assign({},state,{
                         dragItem:[
                                 ...state.dragItem,
                                 {
-                                    id: index,
+                                    id: idDragM,
                                     machineId: state.collection[id].machineId,
                                     name: state.collection[id].name,
                                     inSelected: state.collection[id].inSelected,
@@ -224,17 +307,21 @@ const machineReducer= (state = initialState, action) => {
                     
         case 'UPDATE_POSITION':
                         
-                     id = action.id;
+                     index = action.index;
                      x = action.left;
                      y = action.top;
                      array = state.dragItem.slice();
-                     array[id].left = x;
-                     array[id].top = y;
+                     array[index].left = x;
+                     array[index].top = y;
                      return Object.assign({},state,{dragItem:array});
         
                     
-                    
-                     
+        case 'CHANGE_EXPRESSION':
+            target = action.e.target;
+            value = target.value;
+            array = state.collection.slice();
+            array[action.indexM].expresions[action.indexO] = value;
+            return Object.assign({},state,{collection:array});
                     
         default:
             return state;

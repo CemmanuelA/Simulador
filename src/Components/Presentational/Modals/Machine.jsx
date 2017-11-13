@@ -56,7 +56,7 @@ const Machine = ({show, inputs, outputs, name, inSelected,outSelected,close, han
                    
                    <Row>
                    
-                         <Col md={5} lg={5}>
+                         <Col sm={5} md={5} lg={5}>
                              <FormGroup>
                               <ControlLabel>Entradas</ControlLabel>
                               <FormControl
@@ -69,7 +69,7 @@ const Machine = ({show, inputs, outputs, name, inSelected,outSelected,close, han
                             </FormGroup>
                          </Col>
                      
-                        <Col md={5} lg={5} mdOffset={1} lgOffset={1}>
+                        <Col sm={5} md={5} lg={5} smOffset={1} mdOffset={1} lgOffset={1}>
                             <FormGroup>
                                 <ControlLabel>Salidas</ControlLabel>
                               <FormControl

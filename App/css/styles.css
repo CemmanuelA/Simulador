@@ -3,29 +3,84 @@
   padding: 0;
 }
 
+html, body
+{
+    height: 100%;
+}
 
-/*nav--------------------------------------------------------------------*/
+/*MAIN----------------------------------------------------------------------*/
 
 #nav{
+  position: relative;
   clear:both;
+  background-color: #337ab7;
+  margin:0;
   
+}
+#nav li a{
+  color:white;
+}
+
+#nav li ul li a{
+  color:black;
 }
 
 
-/*DropZone-----------------------------------------------------------*/
+#mainContainer{
+  position:absolute;
+  height:100%;
+  width: 100%;
+}
 .dropZone{
-  position: absolute;
+  position:relative;
   height: 93%;
   width: 83%;
-  right: 0px;
+  float: left;
   
 }
+
+
+/*DRAG_ITEM_ZONE------------------------------------------------------------*/
+.containerFlex{
+  display: flex;
+  flex-direction: column;
+  align-items:center;
+  justify-content:center;
+  border:1px solid black;
+  
+  
+}
+.center{
+  flex:2;
+  
+}
+
+.center .icons{
+  flex-direction: row;
+  justify-content: space-between;
+  
+}
+/*DRAG ITEM ADDER-----------------------------------------------------*/
+.adderInput{
+ border-style: none;
+
+}
+.adderOutput{
+ border-style: none;
+
+}
+.adderCenter{
+  border-radius: 25px
+}
+
 /*Process------------------------------------------------------------*/
 .container{
-  position: absolute;
+  position: relative;
   padding: 0px;
+  margin: 0px;
   height: 93%;
   width: 17%;
+  float:left;
   border: 1px solid;
   cursor: pointer;
   z-index: 1;
@@ -39,8 +94,17 @@
   font-size:15px;
   font-weight: bold;
 }
-.list-item {
- display: inline-block;
+st-item {
+ display: flex;
+ flex-direction: row;
+}
+.spanContainer{
+  display: flex;
+  flex-direction: row;
+}
+.panelTab{
+  overflow-y: auto;
+  height: 150px;
 }
 
 
