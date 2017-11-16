@@ -15,6 +15,7 @@ const connectorsReducer = (state = initialState,action) =>{
       let indexIn = null;
       let idOut = null;
       let indexC = null;
+      let indexO = null;
       let x0 = null;
       let x1 = null;
       let y0 = null;
@@ -24,6 +25,8 @@ const connectorsReducer = (state = initialState,action) =>{
       let index = null;
       let idSourceIn = null;
       let idSourceOut = null;
+      let param1 = null;
+      let param2 = null;
       switch (action.type) {
           
           case 'CREATE_CONNECTOR':
@@ -47,7 +50,8 @@ const connectorsReducer = (state = initialState,action) =>{
                                               canDrop:true,
                                               top:0,
                                               left:0,
-                                              val:0
+                                              param1:[],
+                                              param2:[]
                                           }
                                          
                             
@@ -71,7 +75,8 @@ const connectorsReducer = (state = initialState,action) =>{
                                                   id:id,
                                                   top:0,
                                                   left:0,
-                                                  val:0,
+                                                  param1:[],
+                                                  param2:[],
                                               }
                                 
                                                 ]
@@ -228,6 +233,33 @@ const connectorsReducer = (state = initialState,action) =>{
                  }
                  
                  return Object.assign({},state,{lines:array});
+                 
+        case 'DELETE_CONNECTOR':
+               id = action.id;
+               array = state.Connectors.slice();
+               for (let i = 0; i < array.length; i++) {
+                   if(array[i].id === id){
+                       array.splice(i,1);
+                       break;
+                   }
+               }
+                
+        case 'UPDATE_PARAMS_CONNECTORS':
+               indexC = action.indexC;
+               index = action.index;
+               param1 = action.param1;
+               param2 = action.param2;
+               source = action.source;
+               array =  state.Connectors.slice();
+               if(source === 'output'){
+                   array[indexC].outConnectors[index].param1.push(param1);
+                   array[indexC].outConnectors[index].param2.push(param2);
+                   return Object.assign({},state,{Connectors:array});
+               }else{
+                   array[indexC].inConnectors[index].param1.push(param1);
+                   array[indexC].inConnectors[index].param2.push(param2);
+                   return Object.assign({},state,{Connectors:array});
+               }
           
           default: return state
       }

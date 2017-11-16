@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "expr-eval": "^1.2.0",
     "express": "^4.15.4",
     "konva": "^1.7.6",
     "lodash": "^4.17.4",

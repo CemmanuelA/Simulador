@@ -12,19 +12,19 @@ const initialState = {
     update:false,
     rangeF:{
         min:100,
-        max:500
-    },
-    rangeT:{
-        min:50,
         max:150
     },
+    rangeT:{
+        min:90,
+        max:120
+    },
     rangeA:{
-        min:100,
-        max:400
+        min:50,
+        max:100
     },
     rangeV:{
-        min:100,
-        max:300
+        min:220,
+        max:280
     }
 };
 
@@ -136,7 +136,9 @@ const machineReducer= (state = initialState, action) => {
                        }
                        
                        for (let i =0;i < state.outputs; i++) {
-                           expresions.push('');
+                           const param1 = '';
+                           const param2 = '';
+                           expresions.push({param1,param2});
                        }
                        
                        
@@ -165,22 +167,22 @@ const machineReducer= (state = initialState, action) => {
                                     index:state.index + 1,
                                     dragItem: [ ...state.dragItem ],
                                     update:false,
-                                    rangeF:{
-                                        min:100,
-                                        max:500
-                                    },
-                                    rangeT:{
-                                        min:50,
-                                        max:150
-                                    },
-                                    rangeA:{
-                                        min:100,
-                                        max:400
-                                    },
-                                    rangeV:{
-                                        min:100,
-                                        max:300
-                                    }
+                                       rangeF:{
+                                            min:100,
+                                            max:150
+                                        },
+                                        rangeT:{
+                                            min:90,
+                                            max:120
+                                        },
+                                        rangeA:{
+                                            min:50,
+                                            max:100
+                                        },
+                                        rangeV:{
+                                            min:220,
+                                            max:280
+                                        }
                             
                         };
                        
@@ -264,8 +266,14 @@ const machineReducer= (state = initialState, action) => {
                                 sw = 1;
                             }
                     };
-                    array.splice(id,1);
+                     array.splice(id,1);
                      return Object.assign({},state,{collection:array, dragItem:array2});
+        case 'DELETE_DRAG_MACHINE':
+            
+                     index = action.index;
+                     array = state.dragItem.slice();
+                     array.splice(index,1);
+                     return Object.assign({},state,{dragItem:array});
                      
         case 'UPDATE_MACHINE':
                      id = action.id;
@@ -319,8 +327,13 @@ const machineReducer= (state = initialState, action) => {
         case 'CHANGE_EXPRESSION':
             target = action.e.target;
             value = target.value;
+            inputName = target.name;
             array = state.collection.slice();
-            array[action.indexM].expresions[action.indexO] = value;
+            if(inputName === 'param1'){
+                array[action.indexM].expresions[action.indexO].param1 = value;
+            }else{
+                array[action.indexM].expresions[action.indexO].param2 = value;
+            }
             return Object.assign({},state,{collection:array});
                     
         default:

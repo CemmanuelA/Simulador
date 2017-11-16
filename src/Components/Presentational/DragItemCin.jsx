@@ -65,7 +65,7 @@ function collect (connect,monitor){
 }
 /*-------------------------------------------------------------------------------------------------------------------*/
 const connectorTarget = {
-  canDrop(props,monitor){
+  /*canDrop(props,monitor){
         const availableConnectors = []
         const item = monitor.getItem();
         for (let i = 0; i < props.Connectors.length; i++) {
@@ -86,7 +86,7 @@ const connectorTarget = {
         console.log(availableConnectors)
         return availableConnectors[0];
         
-    },
+    },*/
     drop(props,monitor,component){
         let item = monitor.getItem();
         let indexCin;

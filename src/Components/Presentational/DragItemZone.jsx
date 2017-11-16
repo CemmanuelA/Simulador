@@ -44,7 +44,8 @@ class DragItemZone extends React.Component{
 /*-------------------------------------------------------------------------------------------------------*/
     shouldComponentUpdate(nextProps, nextState) {
             if ((this.props.top != nextProps.top ) || (this.props.left != nextProps.left) 
-                 || (this.props.update == true && nextProps.update == false) ) {
+                 || (this.props.update == true && nextProps.update == false) 
+                 || this.props.Connectors != nextProps.Connectors ) {
               
               return true;
             } 
@@ -75,7 +76,7 @@ class DragItemZone extends React.Component{
      }*/
 	
     render(){
-        const {connectDragSource,index,dragItem,createLine,Connectors,updateConnectorPosition} = this.props;
+        const {connectDragSource,index,dragItem,createLine,Connectors,deleteDragMachine} = this.props;
         const id = dragItem[index].id;
         console.log(Connectors)
         return(connectDragSource(<div style={style(dragItem[index])} key={index}> 
@@ -97,8 +98,7 @@ class DragItemZone extends React.Component{
         							   <div>{dragItem[index].name}</div>
         							   
         							   <div className="icons">
-        							        <Glyphicon glyph="cog"/>
-        							        <Glyphicon glyph="trash"/>
+        							        <Glyphicon glyph="trash" onClick={() => deleteDragMachine(id,index)} />
         							   </div>
     							 </div>
     							 
@@ -229,7 +229,12 @@ const mapDispatchToProps = dispatch =>{
                             top:top,
                             left:left
             });
-        }
+        },
+       deleteDragMachine(id,index){
+           dispatch({type:'DELETE_DRAG_MACHINE',index:index}),
+           dispatch({type:'DELETE_CONNECTOR',id:id});
+       },
+
          
     };
     

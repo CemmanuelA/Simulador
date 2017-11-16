@@ -1,10 +1,7 @@
 const initialState={
     inAdderWater: 1,
-    outAdderWater: 1,
     inAdderGas: 1,
-    outAdderGas: 1,
     inAdderElectricity: 1,
-    outAdderElectricity: 1,
     dragItemWater:[],
     dragItemGas:[],
     dragItemElectricity:[],
@@ -31,9 +28,8 @@ const adderReducer = (state=initialState,action) =>{
             target = action.event.target;
             inputName = target.name;
             value = target.value;
-            if((inputName === 'inAdderWater' && value < 1) || (inputName === 'outAdderWater' && value < 1) ||
-                (inputName === 'inAdderGas' && value < 1) || (inputName === 'outAdderGas' && value < 1) ||
-                 (inputName === 'inAdderElectricity' && value < 1) || (inputName === 'outAdderElectricity' && value < 1)){
+            if((inputName === 'inAdderWater' && value < 1) || (inputName === 'inAdderGas' && value < 1) || 
+            (inputName === 'inAdderElectricity' && value < 1)){
                 value = 1;
             }
             
@@ -42,20 +38,35 @@ const adderReducer = (state=initialState,action) =>{
      case 'CREATE_ADDER_WATER':
          
             action.event.preventDefault();
-            return Object.assign({},state,{
+            console.log( Object.assign({},state,{
                     dragItemWater:[     ...state.dragItemWater,
                                         {
                                             id:'dragW'+ state.waterIndex ,
                                             name:'A' + state.waterIndex ,
                                             inputs: state.inAdderWater,
-                                            outputs: state.outAdderWater,
+                                            outputs: 1,
                                             left:10,
                                             top:10
                                         }
                                         
                                     ],
                     inAdderWater:1,
-                    outAdderWater:1,
+                    waterIndex:state.waterIndex + 1
+                    
+            }))
+            return Object.assign({},state,{
+                    dragItemWater:[     ...state.dragItemWater,
+                                        {
+                                            id:'dragW'+ state.waterIndex ,
+                                            name:'A' + state.waterIndex ,
+                                            inputs: state.inAdderWater,
+                                            outputs: 1,
+                                            left:10,
+                                            top:10
+                                        }
+                                        
+                                    ],
+                    inAdderWater:1,
                     waterIndex:state.waterIndex + 1
                     
             });
@@ -63,20 +74,35 @@ const adderReducer = (state=initialState,action) =>{
     case 'CREATE_ADDER_GAS':
          
             action.event.preventDefault();
-            return Object.assign({},state,{
+            console.log(Object.assign({},state,{
                     dragItemGas:[     ...state.dragItemGas,
                                         {
                                             id:'dragG'+ state.gasIndex ,
                                             name:'G' + state.gasIndex ,
                                             inputs: state.inAdderGas,
-                                            outputs: state.outAdderGas,
+                                            outputs: 1,
                                             left:10,
                                             top:10
                                         }
                                         
                                     ],
                     inAdderGas:1,
-                    outAdderGas:1,
+                    gasIndex:state.gasIndex + 1
+                    
+            }))
+            return Object.assign({},state,{
+                    dragItemGas:[     ...state.dragItemGas,
+                                        {
+                                            id:'dragG'+ state.gasIndex ,
+                                            name:'G' + state.gasIndex ,
+                                            inputs: state.inAdderGas,
+                                            outputs: 1,
+                                            left:10,
+                                            top:10
+                                        }
+                                        
+                                    ],
+                    inAdderGas:1,
                     gasIndex:state.gasIndex + 1
                     
             });
@@ -84,20 +110,35 @@ const adderReducer = (state=initialState,action) =>{
     case 'CREATE_ADDER_ELECTRICITY':
          
             action.event.preventDefault();
-            return Object.assign({},state,{
+            console.log(Object.assign({},state,{
                     dragItemElectricity:[     ...state.dragItemElectricity,
                                         {
                                             id:'dragE'+ state.electricityIndex ,
                                             name:'E' + state.electricityIndex ,
                                             inputs: state.inAdderElectricity,
-                                            outputs: state.outAdderElectricity,
+                                            outputs: 1,
                                             left:10,
                                             top:10
                                         }
                                         
                                     ],
                     inAdderElectricity:1,
-                    outAdderElectricity:1,
+                    electricityIndex:state.electricityIndex + 1
+                    
+            }))
+            return Object.assign({},state,{
+                    dragItemElectricity:[     ...state.dragItemElectricity,
+                                        {
+                                            id:'dragE'+ state.electricityIndex ,
+                                            name:'E' + state.electricityIndex ,
+                                            inputs: state.inAdderElectricity,
+                                            outputs: 1,
+                                            left:10,
+                                            top:10
+                                        }
+                                        
+                                    ],
+                    inAdderElectricity:1,
                     electricityIndex:state.electricityIndex + 1
                     
             });

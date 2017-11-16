@@ -17,52 +17,77 @@ function range(num,op) {
     return result;
 }
 
-function type(op){
+function type(op,indexOut,collection,show,handleExpressionChange){
     switch (op) {
         
         case 'agua':
-             return(
-                 <FormGroup>
-                    <ControlLabel>Temperatura</ControlLabel>
-                    <FormControl
-                         type="text"
-                         name="name"
-                         value=''/>
-                    <ControlLabel>Flujo</ControlLabel>
-                    <FormControl
-                         type="text"
-                         name="flow"
-                         value=''/>
-              </FormGroup>)
+             return(<FormGroup>
+                            <FormControl
+                                    type="text"
+                                    value={collection[show].expresions[indexOut].param1}
+                                    name='param1'
+                                    placeholder={"F" + indexOut}
+                                    onChange={(event) => handleExpressionChange(event,show,indexOut)}
+                                   
+                                   
+                                />
+                            <FormControl
+                                    type="text"
+                                    value={collection[show].expresions[indexOut].param2}
+                                    name='param2'
+                                    placeholder={"T" + indexOut}
+                                    onChange={(event) => handleExpressionChange(event,show,indexOut)}
+                                   
+                                   
+                                />
+                            
+                    </FormGroup>)  
+                
         case 'gas':
-             return(
-                 <FormGroup>
-                    <ControlLabel>Temperatura</ControlLabel>
-                    <FormControl
-                         type="text"
-                         name="name"
-                         value=''/>
-                    <ControlLabel>Flujo</ControlLabel>
-                    <FormControl
-                         type="text"
-                         name="flow"
-                         value=''/>
-              </FormGroup>)
+              return(<FormGroup>
+                            <FormControl
+                                    type="text"
+                                    value={collection[show].expresions[indexOut].param1}
+                                    name='param1'
+                                    placeholder={"F" + indexOut}
+                                    onChange={(event) => handleExpressionChange(event,show,indexOut)}
+                                   
+                                   
+                                />
+                            <FormControl
+                                    type="text"
+                                    value={collection[show].expresions[indexOut].param2}
+                                    name='param2'
+                                    placeholder={"T" + indexOut}
+                                    onChange={(event) => handleExpressionChange(event,show,indexOut)}
+                                   
+                                   
+                                />
+                            
+                    </FormGroup>)
 
         case 'electricidad':
-             return(
-                 <FormGroup>
-                    <ControlLabel>Amperios</ControlLabel>
-                    <FormControl
-                         type="text"
-                         name="amperage"
-                         value=''/>
-                    <ControlLabel>Voltaje</ControlLabel>
-                    <FormControl
-                         type="text"
-                         name="volts"
-                         value=''/>
-              </FormGroup>)
+              return(<FormGroup>
+                            <FormControl
+                                    type="text"
+                                    value={collection[show].expresions[indexOut].param1}
+                                    name='param1'
+                                    placeholder={"V" + indexOut}
+                                    onChange={(event) => handleExpressionChange(event,show,indexOut)}
+                                   
+                                   
+                                />
+                            <FormControl
+                                    type="text"
+                                    value={collection[show].expresions[indexOut].param2}
+                                    name='param2'
+                                    placeholder={"A" + indexOut}
+                                    onChange={(event) => handleExpressionChange(event,show,indexOut)}
+                                   
+                                   
+                                />
+                            
+                    </FormGroup>)
 
         
     }
@@ -75,6 +100,7 @@ var Properties = ({show, collection,valueIn,valueOut, handleInputChange,indexIn,
 
     
      if(collection.length > 0 && show != null){
+         const tipo = collection[show].outSelected[indexOut];
        return (
            <Form>
               <h4><strong>{collection[show].name }</strong></h4>
@@ -98,17 +124,11 @@ var Properties = ({show, collection,valueIn,valueOut, handleInputChange,indexIn,
                             return <option key={i} value={i}>{i}</option>;
                         })}
                   </FormControl>
-                  <ControlLabel>Tipo: {" "+collection[show].outSelected[indexOut].toUpperCase()} </ControlLabel>
-                  <FormControl
-                                    type="text"
-                                    value={collection[show].expresions[indexOut]}
-                                    placeholder="Formula"
-                                    onChange={(event) => handleExpressionChange(event,show,indexOut)}
-                                   
-                                   
-                                />
+                  <ControlLabel>Tipo: {" "+ tipo.toUpperCase()} </ControlLabel>
               
               </FormGroup>
+              
+             { type(tipo,indexOut,collection,show,handleExpressionChange)}
                          
            </Form>
           );

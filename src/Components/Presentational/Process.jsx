@@ -30,7 +30,7 @@ const Process = ({collection, handleProperties, updateMachine, deleteMachine}) =
                         </ListGroup>
                      
                     </Panel>
-                    <Panel collapsible header="Otros procesos" eventKey="2" className='panelTab' bsStyle="primary">Panel 2 content</Panel>
+                    <Panel expanded={true} header="Otros procesos" eventKey="2" className='panelTab' bsStyle="primary">Panel 2 content</Panel>
                     <Panel expanded={true} header="Propiedades" eventKey="3" bsStyle="primary"><Properties/></Panel>
                 </PanelGroup>
            

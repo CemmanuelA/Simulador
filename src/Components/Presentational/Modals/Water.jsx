@@ -23,7 +23,7 @@ class Water extends React.Component{
                 
                 <FormGroup>
                   <Row>
-                     <Col sm={5} md={5} lg={5}>
+                     <Col sm={12} md={12} lg={12}>
                         <ControlLabel>Entradas</ControlLabel>
                         <FormControl
                             type="number"
@@ -33,17 +33,6 @@ class Water extends React.Component{
                             onChange={(event) =>this.props.handleInputChange(event)}
                         />
                      </Col>
-                    
-                     <Col sm={5} md={5} lg={5} smOffset={1} mdOffset={1} lgOffset={1}>
-                         <ControlLabel>Salidas</ControlLabel>
-                        <FormControl
-                            type="number"
-                            name="outAdderWater"
-                            value={this.props.outAdderWater}
-                            placeholder="Salidas"
-                            onChange={(event) =>this.props.handleInputChange(event)}
-                        />
-                     </Col>                        
                   </Row>
                 </FormGroup>
                 <Button type="submit"  value="Submit" bsStyle="success" className="btn-submit">Crear</Button>
@@ -62,7 +51,6 @@ const mapStateToProps = state =>{
        return{
             show: state.show.showWater,
             inAdderWater: state.adder.inAdderWater,
-            outAdderWater: state.adder.outAdderWater,
        };
 };
 

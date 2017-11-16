@@ -27,16 +27,33 @@ html, body
 
 
 #mainContainer{
+  display:flex;
+  flex-direction:column;
   position:absolute;
   height:100%;
   width: 100%;
 }
+.mainContainerDown{
+  display:flex;
+  flex:2;
+  flex-direction:row;
+  align-items:stretch;
+  
+}
 .dropZone{
   position:relative;
-  height: 93%;
-  width: 83%;
-  float: left;
+  flex:3;
+  order:2;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid black;
   
+}
+.chartZone{
+  position:relative;
+  flex:3;
+  order:3;
+  border: 1px solid black;
 }
 
 
@@ -58,6 +75,7 @@ html, body
 .center .icons{
   flex-direction: row;
   justify-content: space-between;
+  cursor: pointer;
   
 }
 /*DRAG ITEM ADDER-----------------------------------------------------*/
@@ -78,9 +96,8 @@ html, body
   position: relative;
   padding: 0px;
   margin: 0px;
-  height: 93%;
-  width: 17%;
-  float:left;
+  order:1;
+  flex:0.5;
   border: 1px solid;
   cursor: pointer;
   z-index: 1;
@@ -94,7 +111,7 @@ html, body
   font-size:15px;
   font-weight: bold;
 }
-st-item {
+.list-item {
  display: flex;
  flex-direction: row;
 }
@@ -104,7 +121,7 @@ st-item {
 }
 .panelTab{
   overflow-y: auto;
-  height: 150px;
+  max-height: 120px;
 }
 
 
