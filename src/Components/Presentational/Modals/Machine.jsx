@@ -14,7 +14,7 @@ function range(num) {
     return result;
 }
 
-const Machine = ({show, inputs, outputs, name, inSelected,outSelected,close, handleInputChange, handleSubmit,update}) =>{
+const Machine = ({show, inputs, outputs, name, inSelected,outSelected,close, handleInputChange, handleSubmit,update,disable}) =>{
 
     return(
     
@@ -103,7 +103,7 @@ const Machine = ({show, inputs, outputs, name, inSelected,outSelected,close, han
                   </Row>
                     
                   
-                   <Button type="submit"  value="Submit" bsStyle="success" className="btn-submit">{update ? 'Modificar' : 'Crear'}</Button>
+                  <Button type="submit"  value="Submit" bsStyle="success" className="btn-submit" disabled={disable}>{update ? 'Modificar' : 'Crear'}</Button>
                   
                 </Form>
 

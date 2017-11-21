@@ -19,6 +19,9 @@ class DragItemCout extends React.Component{
     					
 };
 
+
+
+
 const styleConectors ={
 	
 			height:'8px',
@@ -32,7 +35,7 @@ const styleConectors ={
 
 const connectorSource = {
     beginDrag(props){
-        const {  indexDragI, Connectors, index, itemSource} = props;
+        const {  indexDragI, Connectors, index, itemSource,type} = props;
         let idOut ;
         let indexC
         let idDragI = itemSource[indexDragI].id;
@@ -42,8 +45,11 @@ const connectorSource = {
                            break
                         }
                     }
+        console.log(indexC,'idx conector')
+        console.log(index,'idxOut')
+        console.log(Connectors)
         idOut = Connectors[indexC].outConnectors[index].id;
-        return { idOut, index, indexC, idDragI};
+        return { idOut, index, indexC, idDragI,type};
     }
 };
 

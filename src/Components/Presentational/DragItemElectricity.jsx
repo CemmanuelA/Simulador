@@ -31,15 +31,13 @@ class DragItemElectricity extends React.Component{
               range(dragItemElectricity[index].inputs).map((i) => {
                  const topChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetTop;
                  const leftChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetLeft;
-                 console.log(topChild,leftChild,'entrada'+i)
                  updateConnectorPosition(id,i,'input',topParent+topChild,leftParent+leftChild)});
                  
              range(dragItemElectricity[index].outputs).map((i) => {
                  const topChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetTop;
                  const leftChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetLeft;
-                 console.log(topChild,leftChild,'salida'+i)
                  updateConnectorPosition(id,i,'output',topParent+topChild,leftParent+leftChild)});
-            this.props.handleRefs(this.dragRefIn,this.dragRefOut,'electricity'); 
+            this.props.handleRefs(this.dragRefIn,this.dragRefOut,index,'electricity');; 
         }
 /*-------------------------------------------------------------------------------------------------------*/
     shouldComponentUpdate(nextProps, nextState) {
@@ -50,9 +48,9 @@ class DragItemElectricity extends React.Component{
             } 
             return false;       
     }
-    
+/*--------------------------------------------------------------------------------------------------------*/
     render(){
-         const {connectDragSource,index,dragItemElectricity,createLine,Connectors,updateConnectorPosition} = this.props;
+         const {connectDragSource,index,dragItemElectricity,createLine,Connectors,deleteAdder} = this.props;
          const id = dragItemElectricity[index].id;
         return(connectDragSource(<div style={style(dragItemElectricity[index])} key={index}> 
     
@@ -61,7 +59,8 @@ class DragItemElectricity extends React.Component{
                 							   {
                 							    return  <DragItemCin key={i} ref={(ref) => this.dragRefIn[i] = ref} index={i} 
                 							                         indexDragI={index} Connectors={Connectors}
-                							                         itemSource={dragItemElectricity} createLine={createLine}>
+                							                         itemSource={dragItemElectricity} createLine={createLine}
+                							                         type={dragItemElectricity[index].type}>
                 							             </DragItemCin>;
 
                 							   })}
@@ -73,7 +72,7 @@ class DragItemElectricity extends React.Component{
         							   <div><h4>{dragItemElectricity[index].name}</h4></div>
         							   
         							   <div className="icons">
-        							        <Glyphicon glyph="trash"/>
+        							        <Glyphicon glyph="trash" onClick={() => deleteAdder(id,index,'zone','electricity')}/>
         							   </div>
     							 </div>
     							 
@@ -84,7 +83,8 @@ class DragItemElectricity extends React.Component{
                 							   let ref = id +'_Out_' + i;
                 							    return  <DragItemCout key={i} ref={(ref) => this.dragRefOut[i] = ref} index={i} 
                 							                          indexDragI={index} Connectors={Connectors}
-                							                          itemSource={dragItemElectricity} >
+                							                          itemSource={dragItemElectricity}
+                							                          type={dragItemElectricity[index].type}>
                 							            </DragItemCout>;   
                 							   })}
     							    </div>
@@ -200,7 +200,12 @@ const mapDispatchToProps = dispatch =>{
                             top:top,
                             left:left
             });
-        }
+        },
+        deleteAdder(id,index,source,sourceAdder){
+           dispatch({type:'DELETE_ADDER',index:index,source:sourceAdder}),
+           dispatch({type:'DELETE_CONNECTOR',id:id,idToDelete:[],source:source}),
+           dispatch({type:'DELETE_LINE',id:id})
+       }
          
     };
     

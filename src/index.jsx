@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import  Main from './Components/Presentational/Main.jsx';
+import  ContainerMain from './Components/Containers/ContainerMain.jsx';
 import { Provider } from 'react-redux';
 import Store from './Store.jsx'
 
@@ -9,7 +9,7 @@ class App extends React.Component {
     
     render(){
         
-        return <Main />;
+        return <ContainerMain />;
     }
 }
 

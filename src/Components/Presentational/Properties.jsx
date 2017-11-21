@@ -101,6 +101,7 @@ var Properties = ({show, collection,valueIn,valueOut, handleInputChange,indexIn,
     
      if(collection.length > 0 && show != null){
          const tipo = collection[show].outSelected[indexOut];
+
        return (
            <Form>
               <h4><strong>{collection[show].name }</strong></h4>
@@ -127,7 +128,6 @@ var Properties = ({show, collection,valueIn,valueOut, handleInputChange,indexIn,
                   <ControlLabel>Tipo: {" "+ tipo.toUpperCase()} </ControlLabel>
               
               </FormGroup>
-              
              { type(tipo,indexOut,collection,show,handleExpressionChange)}
                          
            </Form>

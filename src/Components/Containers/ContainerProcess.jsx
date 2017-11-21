@@ -1,5 +1,4 @@
 import React from 'react';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
 
 
@@ -14,22 +13,18 @@ const mapStateToProps = state => {
     
     return{
         collection: state.machine.collection,
+        dragItem: state.machine.dragItem
     };
     
 };
 
-
-const  updateMachine = id => dispatch =>{
-           
-                dispatch({type:"UPDATE_MACHINE",
-                      id:id}).then(()=>dispatch({type:"SHOW_MACHINE",show:true}));
-        }
 
 const mapDispatchToProps = dispatch =>{
     
     return{
         
         handleProperties(id){
+            dispatch({type:'ON_CLICK_LIST_ITEM'}),
             dispatch({type:"SHOW_PROPERTIES",
                       id:id});
         },
@@ -41,9 +36,13 @@ const mapDispatchToProps = dispatch =>{
                 dispatch({type:"SHOW_MACHINE",show:true});
         },        
        
-       deleteMachine(id){
-            dispatch({type:"DELETE_MACHINE",
-                      id:id})
+       deleteMachine(index,idToDelete,source){
+           dispatch({type:'DELETE_CONNECTOR',id:0,idToDelete:idToDelete,source:source}),
+           
+           dispatch({type:'DELETE_LINE',id:0,idToDelete:idToDelete,source:source}),
+           
+           dispatch({type:"DELETE_MACHINE",
+                     index:index});
         }
     
     };

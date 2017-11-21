@@ -7,7 +7,7 @@ import { Glyphicon } from 'react-bootstrap';
 
 import { ItemTypes } from '../../ItemTypes.jsx';
 import DragItemCout from './DragItemCout.jsx';
-import DragItemCin from './DragItemCin.jsx'
+import DragItemCin from './DragItemCin.jsx';
 
 class DragItemZone extends React.Component{
 
@@ -20,7 +20,19 @@ class DragItemZone extends React.Component{
              createCollection(id);
              this.dragRefIn = [];
              this.dragRefOut = [];
+             
         }
+/*--------------------------------------------------------------------------------------------------------*/
+    /*componentWillReceiveProps(nextProps){
+        if(this.props.dragItem != nextProps.dragItem){
+             const {dragItem, index, createConnector,createCollection} = this.props;
+             const id = dragItem[index].id;
+             range(dragItem[index].inSelected.length).map((i) => createConnector(id,'input',i));
+             range(dragItem[index].outSelected.length).map((i) => createConnector(id,'output',i));
+             createCollection(id);
+            
+        }
+    }*/
 /*-------------------------------------------------------------------------------------------------------*/
     componentDidMount(){
              const {dragItem, index, updateConnectorPosition} = this.props;
@@ -30,55 +42,54 @@ class DragItemZone extends React.Component{
             range(dragItem[index].inSelected.length).map((i) => {
                  const topChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetTop;
                  const leftChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetLeft;
-                 console.log(topChild+topParent,leftChild+leftParent,'entrada'+i)
                  updateConnectorPosition(id,i,'input',topParent+topChild,leftParent+leftChild)});
                  
              range(dragItem[index].outSelected.length).map((i) => {
                  const topChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetTop;
                  const leftChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetLeft;
-                 console.log(topChild+topParent,leftChild+leftParent,'salida'+i)
                  updateConnectorPosition(id,i,'output',topParent+topChild,leftParent+leftChild)});
-            this.props.handleRefs(this.dragRefIn,this.dragRefOut,'machine'); 
+            this.props.handleRefs(this.dragRefIn,this.dragRefOut,index,'machine');
+           
 
         }
 /*-------------------------------------------------------------------------------------------------------*/
-    shouldComponentUpdate(nextProps, nextState) {
-            if ((this.props.top != nextProps.top ) || (this.props.left != nextProps.left) 
-                 || (this.props.update == true && nextProps.update == false) 
-                 || this.props.Connectors != nextProps.Connectors ) {
-              
-              return true;
-            } 
-            return false;       
+    shouldComponentUpdate(nextProps){
+            if((nextProps.top != this.props.top || nextProps.left != this.props.left) ||
+                nextProps.Connectors != this.props.Connectors || (nextProps.update == false && this.props.update == true)){
+            
+                return true
+            }else{
+                return false;
+            }
     }
-/*-------------------------------------------------------------------------------------------------------
-     componentDidUpdate(nextProps){
-         const {dragItem, index, createConnector,createCollection,updateConnectorPosition} = nextProps;
-         const id = dragItem[index].id;
-         range(dragItem[index].inSelected.length).map((i) => createConnector(id,'input',i));
-         range(dragItem[index].outSelected.length).map((i) => createConnector(id,'output',i));
-         createCollection(id);
-         console.log(dragItem[index].inSelected.length)
-         const topParent = ReactDOM.findDOMNode(this).offsetTop;
-         const leftParent = ReactDOM.findDOMNode(this).offsetLeft;
-            range(dragItem[index].inSelected.length).map((i) => {
+/*-------------------------------------------------------------------------------------------------------*/
+    
+    componentDidUpdate(prevProps){
+        if(prevProps != null){
+            const {dragItem, index, updateConnectorPosition} = this.props;
+            if((prevProps.update == true && this.props.update == false)){
+                const id = dragItem[index].id;
+                const topParent = ReactDOM.findDOMNode(this).offsetTop;
+                const leftParent = ReactDOM.findDOMNode(this).offsetLeft;
+                range(dragItem[index].inSelected.length).map((i) => {
                  const topChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetTop;
                  const leftChild = ReactDOM.findDOMNode(this.dragRefIn[i]).offsetLeft;
-                 console.log(topChild+topParent,leftChild+leftParent,'entrada'+i)
                  updateConnectorPosition(id,i,'input',topParent+topChild,leftParent+leftChild)});
                  
              range(dragItem[index].outSelected.length).map((i) => {
                  const topChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetTop;
                  const leftChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetLeft;
-                 console.log(topChild+topParent,leftChild+leftParent,'salida'+i)
                  updateConnectorPosition(id,i,'output',topParent+topChild,leftParent+leftChild)});
-            this.props.handleRefs(this.dragRefIn,this.dragRefOut,'machine'); 
-     }*/
+            }
+            this.props.handleRefs(this.dragRefIn,this.dragRefOut,index,'machine'); 
+        }
+    }
+/*-------------------------------------------------------------------------------------------------------*/
 	
     render(){
         const {connectDragSource,index,dragItem,createLine,Connectors,deleteDragMachine} = this.props;
         const id = dragItem[index].id;
-        console.log(Connectors)
+        console.log(Connectors,'CONNECTORS')
         return(connectDragSource(<div style={style(dragItem[index])} key={index}> 
     
     							<div className='containerFlex'>
@@ -86,7 +97,8 @@ class DragItemZone extends React.Component{
                 							   {
                 							    return  <DragItemCin key={i}  ref={(ref) => this.dragRefIn[i] = ref} index={i} 
                 							                         indexDragI={index} Connectors={Connectors}
-                							                         itemSource={dragItem} createLine={createLine}>
+                							                         itemSource={dragItem} createLine={createLine}
+                							                         type={dragItem[index].inSelected[i]}>
                 							             </DragItemCin>;
 
                 							   })}
@@ -95,10 +107,10 @@ class DragItemZone extends React.Component{
     							 </div>
     							 
     							 <div className='containerFlex center'>
-        							   <div>{dragItem[index].name}</div>
-        							   
+        							   <div><strong>{dragItem[index].name}</strong></div>
+        							   <div><strong>{dragItem[index].id.substr(4,5)}</strong></div>
         							   <div className="icons">
-        							        <Glyphicon glyph="trash" onClick={() => deleteDragMachine(id,index)} />
+        							        <Glyphicon glyph="trash" onClick={() => deleteDragMachine(id,index,'zone')} />
         							   </div>
     							 </div>
     							 
@@ -108,7 +120,7 @@ class DragItemZone extends React.Component{
                 							   {
                 							    return  <DragItemCout key={i} ref={(ref) => this.dragRefOut[i] = ref} index={i} 
                 							                          indexDragI={index} Connectors={Connectors}
-                							                          itemSource={dragItem}>
+                							                          itemSource={dragItem} type={dragItem[index].outSelected[i]}>
                 							            </DragItemCout>;   
                 							   })}
     							    </div>
@@ -137,7 +149,7 @@ const range = (num) =>{
 
 
 const style = (array) => {
-	let height = 50;
+	let height = 60;
 	let left = array.left.toString();
 	let top = array.top.toString();
 	
@@ -230,10 +242,13 @@ const mapDispatchToProps = dispatch =>{
                             left:left
             });
         },
-       deleteDragMachine(id,index){
+       deleteDragMachine(id,index,source){
            dispatch({type:'DELETE_DRAG_MACHINE',index:index}),
-           dispatch({type:'DELETE_CONNECTOR',id:id});
+           dispatch({type:'DELETE_CONNECTOR',id:id,idToDelete:[],source:source}),
+           dispatch({type:'DELETE_LINE',id:id,idToDelete:[],source:source})
        },
+           
+       
 
          
     };

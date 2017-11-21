@@ -5,7 +5,8 @@ const showReducer= (state = {
         showWater:false,
         showGas:false,
         showElectricity:false,
-        showProperties: null
+        showProperties: null,
+        showHelp:false
         
         }, action) => {
     
@@ -41,6 +42,12 @@ const showReducer= (state = {
         case 'SHOW_ELECTRICITY':{
             
             return{ showElectricity: action.show};
+            
+        }
+        
+         case 'SHOW_HELP':{
+            
+            return{ showHelp: action.show};
             
         }
             

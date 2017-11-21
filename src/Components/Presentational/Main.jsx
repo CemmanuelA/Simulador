@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import flow from 'lodash/flow';
 import { connect } from 'react-redux';
-import { DragDropContext, DropTarget} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import {Nav, NavItem, NavDropdown, MenuItem, Glyphicon, Row, Col } from 'react-bootstrap';
 import { Parser } from 'expr-eval';
@@ -18,6 +17,7 @@ import  OtherProcess        from './Modals/OtherProcess.jsx';
 import  Water               from './Modals/Water.jsx';
 import  Gas                 from './Modals/Gas.jsx';
 import Electricity          from './Modals/Electricity.jsx';
+import Help                 from './Modals/Help.jsx';
 import Chart                from './Chart.jsx';
 
 
@@ -25,55 +25,123 @@ import Chart                from './Chart.jsx';
 
 
 
-
+var interval;
 class Main extends React.Component{
     
     
-        constructor(props){
-            super(props);
-            this.state={dragMachineRefsIn:[],
-                        dragWaterRefsIn:[],
-                        dragGasRefsIn:[],
-                        dragElectricityRefsIn:[],
-                        dragMachineRefsOut:[],
-                        dragWaterRefsOut:[],
-                        dragGasRefsOut:[],
-                        dragElectricityRefsOut:[],
-                        idEndMachines:[],
-                        simulate:false
-                        
-            }
-            this.handleRefs = this.handleRefs.bind(this);
-        }
+    constructor(props){
+        super(props);
+        this.state={dragMachineRefsIn:[],
+                    dragWaterRefsIn:[],
+                    dragGasRefsIn:[],
+                    dragElectricityRefsIn:[],
+                    dragMachineRefsOut:[],
+                    dragWaterRefsOut:[],
+                    dragGasRefsOut:[],
+                    dragElectricityRefsOut:[],
+                    idFinalMachines:[],
+                    simulate:false,
+                    simulation:true,
+                    newSimulation:false
+                    
+        };
+        this.handleRefs = this.handleRefs.bind(this);
+        this.getFinalMachines = this.getFinalMachines.bind(this);
+        this.stopSimulation = this.stopSimulation.bind(this);
+        this.handleSimulated = this.handleSimulated.bind(this);
+        this.calculateVals = this.calculateVals.bind(this);
+        this.evaluateOutputs = this.evaluateOutputs.bind(this);
+        this.assingValuesToNext = this.assingValuesToNext.bind(this);
+        this.findIndexArray = this.findIndexArray.bind(this);
+        this.findIndexMachine = this.findIndexMachine.bind(this);
+        this.addInputs = this.addInputs.bind(this);
+        this.simplifyMyExpression = this.simplifyMyExpression.bind(this);
+        this.unconnectedInputs = this.unconnectedInputs.bind(this);
+        this.paramsDependOnMachinesVals = this.paramsDependOnMachinesVals.bind(this);
+        this.paramsDependOnRandomVals = this.paramsDependOnRandomVals.bind(this);
+    }
+    
  
-    handleRefs(valsIn,valsOut,source){
+    handleRefs(valsIn,valsOut,index,source){
         if(source === 'machine'){
-            this.setState({dragMachineRefsIn:valsIn,
-                           dragMachineRefsOut:valsOut});
+            const refIn = this.state.dragMachineRefsIn;
+            const refOut = this.state.dragMachineRefsOut;
+            refIn[index] = valsIn;
+            refOut[index] = valsOut;
+            this.setState({dragMachineRefsIn:refIn,
+                           dragMachineRefsOut:refOut});
         }else{
             if(source === 'water'){
-                this.setState({dragWaterRefsIn:valsIn,
-                               dragWaterRefsOut:valsOut});
+                const refIn = this.state.dragWaterRefsIn;
+                const refOut = this.state.dragWaterRefsOut;
+                refIn[index] = valsIn;
+                refOut[index] = valsOut;
+                this.setState({dragWaterRefsIn:refIn,
+                               dragWaterRefsOut:refOut});
             }else{ 
+                    
                 if(source === 'gas'){
-                    this.setState({dragGasRefsIn:valsIn,
-                                   dragGasRefsOut:valsOut});
+                    const refIn = this.state.dragGasRefsIn;
+                    const refOut = this.state.dragGasRefsOut;
+                    refIn[index] = valsIn;
+                    refOut[index] = valsOut;
+                    this.setState({dragGasRefsIn:refIn,
+                                   dragGasRefsOut:refOut});
                 }else{
                     if(source === 'electricity'){
-                        this.setState({dragElectricityRefsIn:valsIn,
-                                       dragElectricityRefsOut:valsOut});
+                        const refIn = this.state.dragElectricityRefsIn;
+                        const refOut = this.state.dragElectricityRefsOut;
+                        refIn[index] = valsIn;
+                        refOut[index] = valsOut;
+                        this.setState({dragElectricityRefsIn:refIn,
+                                       dragElectricityRefsOut:refOut});
                     }
                 }
             }
         }
     }
-
+    
+    getFinalMachines(machines){
+        
+        this.setState({idFinalMachines:machines,
+                       simulate:true});
+    }
+    stopSimulation(boolean){
+        const {lines,dragItem,updateIndexValue} =  this.props
+        
+         if(!boolean){
+              clearInterval(interval);
+           }else{
+            var  v  = this.props.v;
+            const idMachines = this.unconnectedInputs(lines,dragItem);
+            interval = setInterval(()=>{
+               console.log(v)
+                this.calculateVals(idMachines,v);
+                updateIndexValue(v);
+                v = v + 1;
+           },1000);
+               
+           }
+    }
+/*----------------------------------------------------------------------------------------------------------------------------------*/
+    handleSimulated(){
+       const {lines,dragItem,updateIndexValue} = this.props;
+          const idMachines = this.unconnectedInputs(lines,dragItem);
+            var v = 0;
+            /*for(let i = 0 ; i < 15; i++){
+                this.calculateVals(idMachines,v)
+                v = v + 1;
+            }*/
+          interval = setInterval(()=>{
+                this.calculateVals(idMachines,v);
+                updateIndexValue(v);
+                v = v + 1;
+           },1000);
+                  
+    }
        render(){
              const {handleSelected,connectDropTarget,isOver,dragItem,lines,dragItemWater,dragItemGas,
-                    dragItemElectricity,update,collection,Connectors,updateParamsConnectors} = this.props;
-        console.log(dragItemWater,'water')
-        console.log(dragItemGas,'gas')
-        console.log(dragItemElectricity,'electricity')
+                    dragItemElectricity,update,deleteLine,newSimulation,v,process,collection} = this.props;
               return (<div id="mainContainer">
                   
                              <ContainerMachine/>
@@ -81,14 +149,13 @@ class Main extends React.Component{
                              <Water/>
                              <Gas/>
                              <Electricity />
+                             <Help />
                              <div className='mainContrainerUp'>
                                  <Row>
                                     <Col sm={12} md={12} lg={12}>
                                      
                                              <Nav id="nav" bsStyle="tabs" 
-                                             onSelect={(SelectedKey)=>handleSelected(SelectedKey,lines,Connectors,
-                                                                      collection,updateParamsConnectors,dragItem,dragItemElectricity,
-                                                                      dragItemWater,dragItemGas,Parser)}>
+                                             onSelect={(SelectedKey)=>handleSelected(SelectedKey,process,collection)}>
                                                  <NavDropdown  className="tab" eventKey={1} title="Proyecto" id="navDropdown">
                                                             
                                                     <MenuItem  eventKey={1.1} >Nuevo</MenuItem>
@@ -100,7 +167,8 @@ class Main extends React.Component{
                                                  <NavItem eventKey={4}><Glyphicon glyph="tint"/>Sumador de agua </NavItem>
                                                  <NavItem eventKey={5}><Glyphicon glyph="fire"/> Sumador de gas </NavItem>
                                                  <NavItem eventKey={6}><Glyphicon glyph="flash"/> Sumador de electricidad </NavItem>
-                                                 <NavItem eventKey={7}onClick={()=>(this.setState({simulate:true}))}><Glyphicon glyph="play"/> Simular </NavItem>
+                                                 <NavItem eventKey={7} onClick={()=>{/*newSimulation()*/;this.handleSimulated()}}><Glyphicon glyph="play"/> Simular </NavItem>
+                                                 <NavItem eventKey={8} onClick={()=>{}}><Glyphicon glyph="play"/> Ayuda </NavItem>
                                             </Nav>
                                   
                                     </Col>
@@ -108,7 +176,11 @@ class Main extends React.Component{
                              </div>
                             <div className='mainContainerDown'>
                                  <ContainerProcess />
-                                 {this.state.simulate ?  <Chart /> : null}
+                                 {this.state.simulate ?  
+                                 <Chart idFinalMachines={this.state.idFinalMachines} v={v} list={list}
+                                 stopSimulation={this.stopSimulation}/>  
+                                 : 
+                                 null}
                                 
                                  
                                 {connectDropTarget(
@@ -134,9 +206,9 @@ class Main extends React.Component{
                                                                   
                                             <svg height="100%" width="100%">
                                                 {list(lines).map(i =>(
-                                                    <line key={i} x1={lines[i].x0} y1={lines[i].y0} 
+                                                    <line onClick={()=>deleteLine(i)} key={i} x1={lines[i].x0} y1={lines[i].y0} 
                                                               x2={lines[i].x1} y2={lines[i].y1} 
-                                                              style={{stroke:"rgb(255,0,0)",strokeWidth:"2"}} />
+                                                              style={{stroke:"rgb(255,0,0)",strokeWidth:"4",cursor:'pointer'}} />
                                                                 ))}
                                             </svg>
                                             </div>
@@ -151,171 +223,14 @@ class Main extends React.Component{
            
            
        }
-
-}
-
-
-/*-------------------------------------------------------------------------------------------------------------------*/
-const list = (array) =>{
-    let List = [];
-    if(array.length > 0){
-  
-    for (let i = 0 ; i < array.length ; i++){
-        
-        List[i] = i;
-    }
-    return List;
-    
-    }
-    
-    return List;
-   
-};
-
-
-/*-------------------------------------------------------------------------------------------------------------------*/
-function collect (connect,monitor){
-    return{
-        connectDropTarget: connect.dropTarget(),
-        isOver: monitor.isOver()
-    }
-}
-/*-------------------------------------------------------------------------------------------------------------------*/
-const boxTarget = {
-	drop(props, monitor, component) {
-	 	    const item = monitor.getItem();
-    		if(item.source === 'list'){
-    		    const delta1 = monitor.getDifferenceFromInitialOffset()
-    		    const delta = monitor.getInitialSourceClientOffset();
-    		    const left = Math.round(delta1.x);
-    		    const top = Math.round(delta1.y);
-    		    console.log("LIST")
-    		    console.log(left)
-    		    console.log(top)
-    		    props.createDragItem(item,left,top);
-    		}else{
-        	        if(item.source === 'machineZone'){
-        	            	const delta = monitor.getDifferenceFromInitialOffset();
-                    		const left = Math.round(props.dragItem[item.index].left + delta.x);
-                    		const top = Math.round(props.dragItem[item.index].top + delta.y);
-                    		props.updateMachinePosition(left,top,item);
-                    		let indexC;
-                    		let id = props.dragItem[item.index].id
-                    	    for (let i = 0; i< props.Connectors.length; i++) {
-                                    if(props.Connectors[i].id === props.dragItem[item.index].id){
-                                        indexC = i;
-                                       break;
-                                    }
-                            }
-                            console.log(props.updateConnectorPosition)
-                    	    list(props.Connectors[indexC].inConnectors).map((i) =>{
-                    	           
-                                    const topChild = ReactDOM.findDOMNode(component.state.dragMachineRefsIn[i]).offsetTop;
-                                    const leftChild = ReactDOM.findDOMNode(component.state.dragMachineRefsIn[i]).offsetLeft;
-                    		        props.updateConnectorPosition(id,i,'input',top+topChild,left+leftChild);
-                    		    });
-                    	    list(props.Connectors[item.index].outConnectors).map((i) =>{
-                                    const topChild = ReactDOM.findDOMNode(component.state.dragMachineRefsOut[i]).offsetTop;
-                                    const leftChild = ReactDOM.findDOMNode(component.state.dragMachineRefsOut[i]).offsetLeft;
-                    		        props.updateConnectorPosition(id,i,'output',top+topChild,left+leftChild);    
-                    		    });
-        	            props.updateLinePosition(id,indexC);
-        	        }else{
-        	            if(item.source === 'waterZone'){
-        	                
-        	                const delta = monitor.getDifferenceFromInitialOffset();
-                    		const left = Math.round(props.dragItemWater[item.index].left + delta.x);
-                    		const top = Math.round(props.dragItemWater[item.index].top + delta.y);
-                    	    props.updateAdderPosition(left,top,item,'water');
-                    	    let indexC;
-                    	    let id = props.dragItemWater[item.index].id
-                    	    for (let i = 0; i< props.Connectors.length; i++) {
-                                    if(props.Connectors[i].id === props.dragItemWater[item.index].id){
-                                        indexC = i;
-                                       break;
-                                    }
-                            }
-                    	    list(props.Connectors[indexC].inConnectors).map((i) =>{
-                                    const topChild = ReactDOM.findDOMNode(component.state.dragWaterRefsIn[i]).offsetTop;
-                                    const leftChild = ReactDOM.findDOMNode(component.state.dragWaterRefsIn[i]).offsetLeft;
-                    		        props.updateConnectorPosition(id,i,'input',top+topChild,left+leftChild);
-                    		    });
-                    	    list(props.Connectors[item.index].outConnectors).map((i) =>{
-                                    const topChild = ReactDOM.findDOMNode(component.state.dragWaterRefsOut[i]).offsetTop;
-                                    const leftChild = ReactDOM.findDOMNode(component.state.dragWaterRefsOut[i]).offsetLeft;
-                    		        props.updateConnectorPosition(id,i,'output',top+topChild,left+leftChild);    
-                    		    });
-                    	    props.updateLinePosition(id,indexC);
-        	            }else{
-            	                if(item.source === 'gasZone'){
-            	                
-                	                const delta = monitor.getDifferenceFromInitialOffset();
-                            		const left = Math.round(props.dragItemGas[item.index].left + delta.x);
-                            		const top = Math.round(props.dragItemGas[item.index].top + delta.y);
-                            	    props.updateAdderPosition(left,top,item,'gas');
-                            	    let indexC;
-                            	    let id = props.dragItemGas[item.index].id;
-                            	    for (let i = 0; i< props.Connectors.length; i++) {
-                                            if(props.Connectors[i].id === props.dragItemGas[item.index].id){
-                                                indexC = i;
-                                               break;
-                                            }
-                                    }
-                            	    list(props.Connectors[indexC].inConnectors).map((i) =>{
-                                            const topChild = ReactDOM.findDOMNode(component.state.dragGasRefsIn[i]).offsetTop;
-                                            const leftChild = ReactDOM.findDOMNode(component.state.dragGasRefsIn[i]).offsetLeft;
-                            		        props.updateConnectorPosition(id,i,'input',top+topChild,left+leftChild);
-                            		    });
-                            	    list(props.Connectors[item.index].outConnectors).map((i) =>{
-                                            const topChild = ReactDOM.findDOMNode(component.state.dragGasRefsOut[i]).offsetTop;
-                                            const leftChild = ReactDOM.findDOMNode(component.state.dragGasRefsOut[i]).offsetLeft;
-                            		        props.updateConnectorPosition(id,i,'output',top+topChild,left+leftChild);    
-                            		    });
-                            	    props.updateLinePosition(id,indexC);
-            	                }else{
-                	                    if(item.source === 'electricityZone'){
-                    	                
-                        	                const delta = monitor.getDifferenceFromInitialOffset();
-                                    		const left = Math.round(props.dragItemElectricity[item.index].left + delta.x);
-                                    		const top = Math.round(props.dragItemElectricity[item.index].top + delta.y);
-                                    	    props.updateAdderPosition(left,top,item,'electricity');
-                                    	    let indexC;
-                                    	    let id = props.dragItemElectricity[item.index].id;
-                                    	    for (let i = 0; i< props.Connectors.length; i++) {
-                                                    if(props.Connectors[i].id === props.dragItemElectricity[item.index].id){
-                                                        indexC = i;
-                                                       break;
-                                                    }
-                                            }
-                                    	    list(props.Connectors[indexC].inConnectors).map((i) =>{
-                                                    const topChild = ReactDOM.findDOMNode(component.state.dragElectricityRefsIn[i]).offsetTop;
-                                                    const leftChild = ReactDOM.findDOMNode(component.state.dragElectricityRefsIn[i]).offsetLeft;
-                                    		        props.updateConnectorPosition(id,i,'input',top+topChild,left+leftChild);
-                                    		    });
-                                    	    list(props.Connectors[item.index].outConnectors).map((i) =>{
-                                                    const topChild = ReactDOM.findDOMNode(component.state.dragElectricityRefsOut[i]).offsetTop;
-                                                    const leftChild = ReactDOM.findDOMNode(component.state.dragElectricityRefsOut[i]).offsetLeft;
-                                    		        props.updateConnectorPosition(id,i,'output',top+topChild,left+leftChild);    
-                                    		    });
-                                    		props.updateLinePosition(id,indexC);
-                    	                }
-        	                    }
-        	            }
-        	        }
-        	    
        
-    		}
-	    
-	}
-};
-
 /*-------------------------------------------------------------------------------------------------------------------*/
-const unconnectedInputs = (lines,dragItem) =>{
+unconnectedInputs(lines,dragItem){
     const idMachines = [];
     
     for (let i = 0; i < dragItem.length; i++) {
         let sw = 0;
-        for (let j = 0; j <lines.length; j++) {
+        for (let j = 0; j < lines.length; j++) {
                 if(lines[j].idSourceIn === dragItem[i].id){
                     sw = 1;
                     
@@ -331,10 +246,11 @@ const unconnectedInputs = (lines,dragItem) =>{
 };
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------*/
-const calculateVals = (lines,Connectors,collection,dragItem,idMachines,dragItemWater,dragItemElectricity,dragItemGas,updateParamsConnectors,Parser) =>{
-    
+calculateVals(idMachines,v){
+    const {lines,Connectors,collection,updateParamsConnectors,dragItem,dragItemElectricity,dragItemWater,dragItemGas,
+           updateLabel} = this.props
     let parser = new Parser();
-    //const completed = idMachines;
+    const completed = [];
     let next = [];
     //le asignaremos el valor a las expresiones de todas las máquinas las cuales ninguna de sus entradas esta conectada.
     for (let i = 0; i < dragItem.length; i++) {
@@ -342,14 +258,15 @@ const calculateVals = (lines,Connectors,collection,dragItem,idMachines,dragItemW
         //Buscamos si en dragItem[i] se encuentra en idMachine
         if(idMachines.indexOf(dragItem[i].id) != -1){
             //obtenemos el indice de la maquina en collection
-            let machIndex = findIndexMachine(dragItem[i].machineId,collection);
+            let machIndex = this.findIndexMachine(dragItem[i].machineId,collection);
             //obtenemos el indice del connector con respecto al id del dragItem
-            let indexC = findIndexArray(dragItem[i].id,Connectors);    
-            
-            next = evaluateOutputs(collection,Connectors,lines,dragItem,next,machIndex,indexC,0,updateParamsConnectors,parser,'dependOnDefaultInputs');
+            let indexC = this.findIndexArray(dragItem[i].id,Connectors);    
+            next = this.evaluateOutputs(collection,Connectors,lines,dragItem,next,machIndex,indexC,0,updateParamsConnectors,parser,v,'dependOnRandomInputs');
         }
+   
+        
     }
-    
+
     while(next.length > 0){
         let tempNext1 = [];
         let tempNext2 = [];
@@ -358,39 +275,38 @@ const calculateVals = (lines,Connectors,collection,dragItem,idMachines,dragItemW
         
         for(let i = 0; i < next.length; i++){
             let index;
-            console.log(findIndexArray(next[i],dragItem) != -1)
-            if(findIndexArray(next[i],dragItem) != -1){
-                    index = findIndexArray(next[i],dragItem);
+            if(this.findIndexArray(next[i],dragItem) != -1){
+                
+                    index = this.findIndexArray(next[i],dragItem);
                     //obtenemos el indice de la maquina en collection
-                    let machIndex = findIndexMachine(dragItem[index].machineId,collection);
+                    let machIndex = this.findIndexMachine(dragItem[index].machineId,collection);
                     //obtenemos el indice del connector con respecto al id del dragItem
-                    let indexC = findIndexArray(dragItem[index].id,Connectors);
+                    let indexC = this.findIndexArray(dragItem[index].id,Connectors);
 
-                    tempNext1 = evaluateOutputs(collection,Connectors,lines,dragItem,tempNext1,machIndex,
-                                               indexC,index,updateParamsConnectors,parser,'dependOnDragItem');
+                    tempNext1 = this.evaluateOutputs(collection,Connectors,lines,dragItem,tempNext1,machIndex,
+                                               indexC,index,updateParamsConnectors,parser,v,'dependOnDragItem');
+                    if (tempNext1.length == 0){
+                         completed.push(dragItem[index].id);
+                    }
 
             }else{
-                console.log(findIndexArray(next[i],dragItemWater) != -1)
-                if(findIndexArray(next[i],dragItemWater) != -1){
-                    index = findIndexArray(next[i],dragItemWater);
-                    let indexC = findIndexArray(dragItemWater[index].id,Connectors);
-                    tempNext2 = addInputs(Connectors,lines,indexC,tempNext2,updateParamsConnectors);
-                    console.log(tempNext2,'DragItem')
+                
+                if(this.findIndexArray(next[i],dragItemWater) != -1){
+                    index = this.findIndexArray(next[i],dragItemWater);
+                    let indexC = this.findIndexArray(dragItemWater[index].id,Connectors);
+                    tempNext2 = this.addInputs(Connectors,lines,indexC,tempNext2,updateParamsConnectors,v);
             
                 }else{
-                    console.log(findIndexArray(next[i],dragItemGas) != -1)
-                    if(findIndexArray(next[i],dragItemGas) != -1){
-                        index = findIndexArray(next[i],dragItemGas);
-                        let indexC = findIndexArray(dragItemGas[index].id,Connectors);
-                        tempNext3 = addInputs(Connectors,lines,indexC,tempNext3,updateParamsConnectors);
-                        console.log(tempNext3,'DragItem')
+                    console.log(this.findIndexArray(next[i],dragItemGas) != -1)
+                    if(this.findIndexArray(next[i],dragItemGas) != -1){
+                        index = this.findIndexArray(next[i],dragItemGas);
+                        let indexC = this.findIndexArray(dragItemGas[index].id,Connectors);
+                        tempNext3 = this.addInputs(Connectors,lines,indexC,tempNext3,updateParamsConnectors,v);
                     }else{
-                        console.log(findIndexArray(next[i],dragItemElectricity) != -1)
-                        if(findIndexArray(next[i],dragItemElectricity) != -1){
-                            index = findIndexArray(next[i],dragItemElectricity);
-                            let indexC = findIndexArray(dragItemElectricity[index].id,Connectors);
-                            tempNext4 = addInputs(Connectors,lines,indexC,tempNext4,updateParamsConnectors);
-                            console.log(tempNext4,'DragItem')
+                        if(this.findIndexArray(next[i],dragItemElectricity) != -1){
+                            index = this.findIndexArray(next[i],dragItemElectricity);
+                            let indexC = this.findIndexArray(dragItemElectricity[index].id,Connectors);
+                            tempNext4 = this.addInputs(Connectors,lines,indexC,tempNext4,updateParamsConnectors,v);
                         }
                     }
                 }        
@@ -398,18 +314,16 @@ const calculateVals = (lines,Connectors,collection,dragItem,idMachines,dragItemW
         }
         next = [];
         next = next.concat(tempNext1,tempNext2,tempNext3,tempNext4);
-        console.log(next,'fuera')
-        debugger
     
     }
-    
-    console.log('TERMINO');
-    
-    
+    updateLabel();
+    if(v == 0){
+         this.getFinalMachines(completed);
+    }
     
 };
 /*------------------------------------------------------------------------------------------------*/
-const evaluateOutputs = (collection,Connectors,lines,dragItem,next,machIndex,indexC,dragIndex,updateParamsConnectors,parser,depend) =>{
+evaluateOutputs(collection,Connectors,lines,dragItem,next,machIndex,indexC,dragIndex,updateParamsConnectors,parser,v,depend){
     
     //a cada salida le vamos a evaluar su la expresion
      for(let k = 0; k < collection[machIndex].outSelected.length; k++){
@@ -420,49 +334,49 @@ const evaluateOutputs = (collection,Connectors,lines,dragItem,next,machIndex,ind
         const varsExpr2 = expr2.variables();
         let id = Connectors[indexC].outConnectors[k].id;
    
-          //vamos aplicar todos los valores de cada una de las entradas que corresponden 
-          //a las variables de las expresiones de la salida
-        for(let v = 0; v < 100; v++){
-            const exprs = simplifyMyExpression(expr1,expr2,collection,dragItem,Connectors,machIndex,dragIndex,indexC,varsExpr1,varsExpr2,v,depend);
-            const tempExpr1 = exprs[0];
-            const tempExpr2 = exprs[1];
-            //actualizamos los valores de los parametros v en la salida k del conector con el indice indexC
-            updateParamsConnectors(indexC,k,tempExpr1.evaluate(),tempExpr2.evaluate(),'output');
-            next = assingValuesToNext(id,lines,Connectors,tempExpr1.evaluate(),tempExpr2.evaluate(),updateParamsConnectors,next);
-        }
+        //simplificamos la expresion
+        const exprs = this.simplifyMyExpression(expr1,expr2,collection,dragItem,Connectors,machIndex,dragIndex,indexC,varsExpr1,varsExpr2,v,depend);
+        const tempExpr1 = exprs[0];
+        const tempExpr2 = exprs[1];
+        
+        console.log(tempExpr1.evaluate(),tempExpr2.evaluate(),'vals output')
+        updateParamsConnectors(indexC,k,tempExpr1.evaluate(),tempExpr2.evaluate(),'output');
+        next = this.assingValuesToNext(id,lines,Connectors,tempExpr1.evaluate(),tempExpr2.evaluate(),updateParamsConnectors,next);
+        
     }
     return next;
 }
 /*------------------------------------------------------------------------------------------------*/
-const addInputs = (Connectors,lines,indexC,next,updateParamsConnectors) =>{
+addInputs(Connectors,lines,indexC,next,updateParamsConnectors,v){
         
-        for(let j = 0; j < 100; j++){
-            let param1 = 0;
-            let param2 = 0;
-            for(let i = 0; i < Connectors[indexC].inConnectors.length; i++){
-                
-                
-                    param1 = param1 + Connectors[indexC].inConnectors[i].param1[j];
-                    param2 = param2 + Connectors[indexC].inConnectors[i].param2[j];
-      
-            }
-            updateParamsConnectors(indexC,0,param1,param2,'output');
-            next = assingValuesToNext(Connectors[indexC].outConnectors[0].id,lines,Connectors,param1,param2,updateParamsConnectors,next);
+        let param1 = 0;
+        let param2 = 0;
+        for(let i = 0; i < Connectors[indexC].inConnectors.length; i++){
+            
+            
+                param1 = param1 + Connectors[indexC].inConnectors[i].param1[v].y;
+                param2 = param2 + Connectors[indexC].inConnectors[i].param2[v].y;
+  
         }
+        updateParamsConnectors(indexC,0,param1,param2,'output');
+        next = this.assingValuesToNext(Connectors[indexC].outConnectors[0].id,lines,Connectors,param1,param2,updateParamsConnectors,next);
        
         //Buscamos el que le sigue al sumador
       return next;
 };
 /*------------------------------------------------------------------------------------------------*/
-const simplifyMyExpression = (expr1,expr2,collection,dragItem,Connectors,machIndex,dragIndex,indexC,varsExpr1,varsExpr2,v,depend) =>{
-    let exprs;
+simplifyMyExpression(expr1,expr2,collection,dragItem,Connectors,machIndex,dragIndex,indexC,varsExpr1,varsExpr2,v,depend){
+    let exprs = [];
+    exprs[0] = expr1;
+    exprs[1] = expr2;
     for(let p = 0; p < collection[machIndex].inSelected.length; p++){
-        if(depend === 'dependOnDefaultInputs'){
+        if(depend === 'dependOnRandomInputs'){
 
-            exprs = paramsDependOnTheInitialVals(collection,machIndex,expr1,expr2,varsExpr1,varsExpr2,p,v);
+            exprs = this.paramsDependOnRandomVals(collection,machIndex,exprs[0],exprs[1],varsExpr1,varsExpr2,p);
+            console.log(exprs[0].variables(),exprs[1].variables())
         }else{
             if(depend === 'dependOnDragItem'){
-                exprs =  paramsDependOnMachinesVals(dragItem,Connectors,dragIndex,indexC,expr1,expr2,varsExpr1,varsExpr2,p,v);
+                exprs =  this.paramsDependOnMachinesVals(dragItem,Connectors,dragIndex,indexC,expr1,expr2,varsExpr1,varsExpr2,p,v);
             }
         }
         
@@ -472,34 +386,36 @@ const simplifyMyExpression = (expr1,expr2,collection,dragItem,Connectors,machInd
         return exprs;
 }
 /*-------------------------------------------------------------------------------------------------------------------*/
-const paramsDependOnTheInitialVals = (collection,machIndex,expr1,expr2,varsExpr1,varsExpr2,p,v) =>{
+paramsDependOnRandomVals(collection,machIndex,expr1,expr2,varsExpr1,varsExpr2,p){
       const exprs = [];
      //Si la entrada es tipo agua va mirar si las expresiones tiene la variable FA o TA para remplazarla por su valor.
+     console.log(collection[machIndex].inSelected[p],'tipo')
+     console.log(expr1.variables(),expr2.variables())
       if(collection[machIndex].inSelected[p] === 'agua'){
            const Var1 = 'FA' + p;
            const Var2 = 'TA' + p;
            //si la variable FA + p(numero de la entrada) esta en la expr1, coge el valor v del array de flujo 
            //de esa entrada y lo remplaza
           if(varsExpr1.indexOf(Var1) != -1 ){
-              const val = collection[machIndex].valParams[p].flow[v];
+              const val = Math.floor((Math.random() * 150) + 50);
               expr1 = expr1.simplify({ [Var1]: val })
           }
           //si la variable TA + p(numero de la entrada) esta en la expr1, coge el valor v del array de flujo 
           //de esa entrada y lo remplaza
           if(varsExpr1.indexOf(Var2) != -1 ){
-              const val = collection[machIndex].valParams[p].temperature[v];
+              const val = Math.floor((Math.random() * 120) + 90);
               expr1 = expr1.simplify({ [Var2]: val })
           }
           //si la variable FA + p(numero de la entrada) esta en la expr2, coge el valor v del array de flujo 
           //de esa entrada y lo remplaza
           if(varsExpr2.indexOf(Var1) != -1 ){
-              const val = collection[machIndex].valParams[p].flow[v];
+              const val = Math.floor((Math.random() * 150) + 50);
               expr2 = expr2.simplify({ [Var1]: val })
           }
           //si la variable FA + p(numero de la entrada) esta en la expr2, coge el valor v del array de flujo 
           //de esa entrada y lo remplaza
           if(varsExpr2.indexOf(Var2) != -1 ){
-              const val = collection[machIndex].valParams[p].temperature[v];
+              const val = Math.floor((Math.random() * 120) + 90);
               expr2 = expr2.simplify({ [Var2]: val })
           }
       }else{
@@ -508,19 +424,19 @@ const paramsDependOnTheInitialVals = (collection,machIndex,expr1,expr2,varsExpr1
                    const Var1 = 'FG' + p;
                    const Var2 = 'TG' + p;
                    if(varsExpr1.indexOf(Var1) != -1 ){
-                      const val = collection[machIndex].valParams[p].flow[v];
+                      const val = Math.floor((Math.random() * 150) + 50);
                       expr1 = expr1.simplify({ [Var1]: val })
                    }
                    if(varsExpr1.indexOf(Var2) != -1 ){
-                      const val = collection[machIndex].valParams[p].temperature[v];
+                      const val = Math.floor((Math.random() * 120) + 90);
                       expr1 = expr1.simplify({ [Var2]: val })
                    }
                    if(varsExpr2.indexOf(Var1) != -1 ){
-                      const val = collection[machIndex].valParams[p].flow[v];
+                      const val = Math.floor((Math.random() * 150) + 50);
                       expr2 = expr2.simplify({ [Var1]: val })
                     }
                   if(varsExpr2.indexOf(Var2) != -1 ){
-                      const val = collection[machIndex].valParams[p].temperature[v];
+                      const val = Math.floor((Math.random() * 120) + 90);
                       expr2 = expr2.simplify({ [Var2]: val })
                    }
                 }else{
@@ -529,19 +445,19 @@ const paramsDependOnTheInitialVals = (collection,machIndex,expr1,expr2,varsExpr1
                                const Var1 = 'A' + p;
                                const Var2 = 'V' + p;
                                if(varsExpr1.indexOf(Var1) != -1 ){
-                                  const val = collection[machIndex].valParams[p].amperage[v];
+                                  const val = Math.floor((Math.random() * 60) + 20);
                                   expr1 = expr1.simplify({ [Var1]: val })
                                }
                                if(varsExpr1.indexOf(Var2) != -1 ){
-                                  const val = collection[machIndex].valParams[p].volts[v];
+                                  const val = Math.floor((Math.random() * 220) + 200);
                                   expr1 = expr1.simplify({ [Var2]: val })
                                }
                                 if(varsExpr2.indexOf(Var1) != -1 ){
-                                  const val = collection[machIndex].valParams[p].amperage[v];
+                                  const val = Math.floor((Math.random() * 60) + 20);
                                   expr2 = expr2.simplify({ [Var1]: val })
                                 }
                                 if(varsExpr2.indexOf(Var2) != -1 ){
-                                  const val = collection[machIndex].valParams[p].volts[v];
+                                  const val = Math.floor((Math.random() * 220) + 200);
                                   expr2 = expr2.simplify({ [Var2]: val })
                                 }
                         }else{
@@ -554,7 +470,7 @@ const paramsDependOnTheInitialVals = (collection,machIndex,expr1,expr2,varsExpr1
         return exprs;
 };
 
-const paramsDependOnMachinesVals = (dragItem,Connectors,dragIndex,indexC,expr1,expr2,varsExpr1,varsExpr2,p,v) =>{
+paramsDependOnMachinesVals(dragItem,Connectors,dragIndex,indexC,expr1,expr2,varsExpr1,varsExpr2,p,v){
     
      const exprs = [];
      //Si la entrada es tipo agua va mirar si las expresiones tiene la variable FA o TA para remplazarla por su valor.
@@ -564,26 +480,26 @@ const paramsDependOnMachinesVals = (dragItem,Connectors,dragIndex,indexC,expr1,e
            //si la variable FA + p(numero de la entrada) esta en la expr1, coge el valor v del array de flujo 
            //de esa entrada y lo remplaza
           if(varsExpr1.indexOf(Var1) != -1 ){
-              const val = Connectors[indexC].inConnectors[p].param1[v];
-              expr1 = expr1.simplify({ [Var1]: val })
+              const val = Connectors[indexC].inConnectors[p].param1[v].y;
+              expr1 = expr1.simplify({ [Var1]: val });
           }
           //si la variable TA + p(numero de la entrada) esta en la expr1, coge el valor v del array de flujo 
           //de esa entrada y lo remplaza
           if(varsExpr1.indexOf(Var2) != -1 ){
-              const val = Connectors[indexC].inConnectors[p].param2[v];
-              expr1 = expr1.simplify({ [Var2]: val })
+              const val = Connectors[indexC].inConnectors[p].param2[v].y;
+              expr1 = expr1.simplify({ [Var2]: val });
           }
           //si la variable FA + p(numero de la entrada) esta en la expr2, coge el valor v del array de flujo 
           //de esa entrada y lo remplaza
           if(varsExpr2.indexOf(Var1) != -1 ){
-              const val = Connectors[indexC].inConnectors[p].param1[v];
-              expr2 = expr2.simplify({ [Var1]: val })
+              const val = Connectors[indexC].inConnectors[p].param1[v].y;
+              expr2 = expr2.simplify({ [Var1]: val });
           }
           //si la variable FA + p(numero de la entrada) esta en la expr2, coge el valor v del array de flujo 
           //de esa entrada y lo remplaza
           if(varsExpr2.indexOf(Var2) != -1 ){
-              const val = Connectors[indexC].inConnectors[p].param2[v];
-              expr2 = expr2.simplify({ [Var2]: val })
+              const val = Connectors[indexC].inConnectors[p].param2[v].y;
+              expr2 = expr2.simplify({ [Var2]: val });
           }
       }else{
                //Si la entrada es tipo gas va mirar si las expresiones tiene la variable FG o TG para remplazarla por su valor.
@@ -591,19 +507,19 @@ const paramsDependOnMachinesVals = (dragItem,Connectors,dragIndex,indexC,expr1,e
                    const Var1 = 'FG' + p;
                    const Var2 = 'TG' + p;
                    if(varsExpr1.indexOf(Var1) != -1 ){
-                      const val = Connectors[indexC].inConnectors[p].param1[v];
+                      const val = Connectors[indexC].inConnectors[p].param1[v].y;
                       expr1 = expr1.simplify({ [Var1]: val })
                    }
                    if(varsExpr1.indexOf(Var2) != -1 ){
-                       const val = Connectors[indexC].inConnectors[p].param2[v];
+                       const val = Connectors[indexC].inConnectors[p].param2[v].y;
                       expr1 = expr1.simplify({ [Var2]: val })
                    }
                    if(varsExpr2.indexOf(Var1) != -1 ){
-                       const val = Connectors[indexC].inConnectors[p].param1[v];
+                       const val = Connectors[indexC].inConnectors[p].param1[v].y;
                       expr2 = expr2.simplify({ [Var1]: val })
                     }
                   if(varsExpr2.indexOf(Var2) != -1 ){
-                       const val = Connectors[indexC].inConnectors[p].param2[v];
+                       const val = Connectors[indexC].inConnectors[p].param2[v].y;
                       expr2 = expr2.simplify({ [Var2]: val })
                    }
                 }else{
@@ -612,19 +528,19 @@ const paramsDependOnMachinesVals = (dragItem,Connectors,dragIndex,indexC,expr1,e
                                const Var1 = 'A' + p;
                                const Var2 = 'V' + p;
                                if(varsExpr1.indexOf(Var1) != -1 ){
-                                   const val = Connectors[indexC].inConnectors[p].param1[v];;
+                                   const val = Connectors[indexC].inConnectors[p].param1[v].y;
                                   expr1 = expr1.simplify({ [Var1]: val })
                                }
                                if(varsExpr1.indexOf(Var2) != -1 ){
-                                   const val = Connectors[indexC].inConnectors[p].param2[v];
+                                   const val = Connectors[indexC].inConnectors[p].param2[v].y;
                                   expr1 = expr1.simplify({ [Var2]: val })
                                }
                                 if(varsExpr2.indexOf(Var1) != -1 ){
-                                   const val = Connectors[indexC].inConnectors[p].param1[v];
+                                   const val = Connectors[indexC].inConnectors[p].param1[v].y;
                                   expr2 = expr2.simplify({ [Var1]: val })
                                 }
                                 if(varsExpr2.indexOf(Var2) != -1 ){
-                                  const val = Connectors[indexC].inConnectors[p].param2[v];
+                                  const val = Connectors[indexC].inConnectors[p].param2[v].y;
                                   expr2 = expr2.simplify({ [Var2]: val })
                                 }
                         }else{
@@ -638,8 +554,8 @@ const paramsDependOnMachinesVals = (dragItem,Connectors,dragIndex,indexC,expr1,e
     
 }
 /*-------------------------------------------------------------------------------------------------------------------*/
-const findIndexArray = (id,array) =>{
-    let indexC = -1;
+findIndexArray(id,array){
+    var indexC = -1;
     for (let i = 0; i < array.length; i++){
         if(id === array[i].id){
             indexC = i;
@@ -650,8 +566,8 @@ const findIndexArray = (id,array) =>{
     return indexC;
 };
 
-const findIndexMachine = (id,array) =>{
-    let indexC = -1;
+findIndexMachine(id,array){
+    var indexC = -1;
     for (let i = 0; i < array.length; i++){
         if(id === array[i].machineId){
             indexC = i;
@@ -662,7 +578,7 @@ const findIndexMachine = (id,array) =>{
 };
 
 /*-------------------------------------------------------------------------------------------------------------------*/
-const assingValuesToNext = (id,lines,Connectors,param1,param2,updateParamsConnectors,next) =>{
+assingValuesToNext(id,lines,Connectors,param1,param2,updateParamsConnectors,next){
     //le asignamos los valores de param1 y param2 a la entrada conectada al id de salida
     let indexC;
     let sw = 0;
@@ -670,8 +586,8 @@ const assingValuesToNext = (id,lines,Connectors,param1,param2,updateParamsConnec
             //encontramos el id en lines que sea igual al id de salida que ya tenemos
                 if(id === lines[i].idOut){
 
-                   indexC = findIndexArray(lines[i].idSourceIn,Connectors);
-                   //Guardarmos los id de las máquinas a las que les hayamos los valores de entrada
+                   indexC = this.findIndexArray(lines[i].idSourceIn,Connectors);
+                   //Guardarmos los id de las máquinas a las que les hallamos los valores de entrada
                    if(next.indexOf(lines[i].idSourceIn) == -1){
                        next.push(lines[i].idSourceIn);
                    }
@@ -694,83 +610,32 @@ const assingValuesToNext = (id,lines,Connectors,param1,param2,updateParamsConnec
     return next;
         
 };
+
+
+}
+
+
 /*-------------------------------------------------------------------------------------------------------------------*/
-const mapStateToProps = state => {
-    return{
-       
-       dragItem: state.machine.dragItem,
-       collection: state.machine.collection,
-       update: state.machine.update,
-       dragItemWater: state.adder.dragItemWater,
-       dragItemGas: state.adder.dragItemGas,
-       dragItemElectricity: state.adder.dragItemElectricity,
-       lines: state.connector.lines,
-       Connectors: state.connector.Connectors
-    };
-    
-};
-/*-------------------------------------------------------------------------------------------------------------------*/
-const mapDispatchToProps = dispatch => {
-    return{
-        handleSelected(SelectedKey,lines,Connectors,collection,updateParamsConnectors,dragItem,
-                      dragItemElectricity,dragItemGas,dragItemWater,Parser){
-             switch (SelectedKey) {
-                 case 2:
-                     dispatch({type:"SHOW_MACHINE",show:true});
-                     break;
-                case 3: 
-                    dispatch({type:"SHOW_OTHER_PROCESS",show:true});
-                    break;
-                case 4: 
-                    dispatch({type:"SHOW_WATER",show:true});
-                    break;
-                case 5: 
-                    dispatch({type:"SHOW_GAS",show:true});
-                    break;
-                 case 6: 
-                    dispatch({type:"SHOW_ELECTRICITY",show:true});
-                    break;
-                case 7: 
-                    const idMachines = unconnectedInputs(lines,dragItem);
-                   /* calculateVals(lines,Connectors,collection,dragItem,idMachines,dragItemWater,
-                                 dragItemElectricity,dragItemGas,updateParamsConnectors,Parser);*/
-                    
-                    break;
-                 
-                 default:
-                     // code
-             }
-            },
-        updateMachinePosition(left,top,item){
-            dispatch({type:"UPDATE_POSITION",left:left,top:top,index:item.index});
-        },
-        updateAdderPosition(left,top,item,source){
-            dispatch({type:"UPDATE_ADDER_POSITION",left:left,top:top,index:item.index,source:source});
-        },
-        createDragItem(item,left,top){
-            dispatch({type:"CREATE_DRAG_ITEM",id:item.index,left:left,top:top});
-        },
-        updateConnectorPosition(id,index,source,top,left){
-            dispatch({type:'UPDATE_CONNECTOR_POSITION',
-                            id:id,
-                            index:index,
-                            source:source,
-                            top:top,
-                            left:left
-            });
-        },
-        updateLinePosition(id,indexC){
-            dispatch({type:'UPDATE_LINE_POSITION',id:id,indexC:indexC});
-        },
-        updateParamsConnectors(indexC,index,param1,param2,source){
-            dispatch({type:'UPDATE_PARAMS_CONNECTORS',indexC:indexC,index:index,param1:param1,param2:param2,source:source});
-        }
+const list = (array) =>{
+    let List = [];
+    if(array.length > 0){
+  
+    for (let i = 0 ; i < array.length ; i++){
         
-    };
+        List[i] = i;
+    }
+    return List;
     
+    }
+    
+    return List;
+   
 };
 
+export default Main;
 
 
-export default flow(DropTarget([ItemTypes.MACHINE,ItemTypes.ADDER_WATER,ItemTypes.ADDER_GAS,ItemTypes.ADDER_ELECTRICITY],
-                    boxTarget,collect),connect(mapStateToProps,mapDispatchToProps,null,{ withRef: true }),DragDropContext(HTML5Backend))(Main);
+
+
+
+

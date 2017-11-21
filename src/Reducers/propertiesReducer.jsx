@@ -23,10 +23,9 @@ const propertiesReducer = (state={
                     }
                 }
             }
-                
-            
-                
-        
+        }
+        if(action.type === 'ON_CLICK_LIST_ITEM'){
+           return Object.assign({},state,{indexOut:0, indexIn:0,valueIn: "Entrada 0",valueOut: "Salida 0 ",})
         }
         
         return state;

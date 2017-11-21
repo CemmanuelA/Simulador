@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Alert } from 'react-bootstrap';
 import { DropTarget } from 'react-dnd';
 
 import { ItemTypes } from '../../ItemTypes.jsx';
@@ -8,6 +9,10 @@ import { ItemTypes } from '../../ItemTypes.jsx';
 let drop_item;
 
 class DragItemCint extends React.Component{
+    constructor(props){
+        super(props)
+        this.state = {showAlert:false}
+    }
     
 	
 	render(){
@@ -18,6 +23,13 @@ class DragItemCint extends React.Component{
                                     {isOver && !canDrop && renderOverlay('red')}
 				                    {!isOver && canDrop && renderOverlay('yellow')}
 				                    {isOver && canDrop && renderOverlay('green')}
+				                    {this.state.showAlert ?
+				                     <Alert bsStyle="danger" onDismiss={this.handleAlertDismiss}>
+				                     <p>No se pueden unir conectores de distintos tipos</p>
+				                     </Alert>
+				                     :
+				                     null
+				                    }
                                  </div>));
     								
 	}
@@ -91,7 +103,7 @@ const connectorTarget = {
         let item = monitor.getItem();
         let indexCin;
         let indexCout = item.indexC;
-        const { createLine, indexDragI, index, Connectors,itemSource } = props;
+        const { createLine, indexDragI, index, Connectors,itemSource, type} = props;
         
         for (let i = 0; i< Connectors.length; i++) {
                         if(Connectors[i].id === itemSource[indexDragI].id){
@@ -103,8 +115,17 @@ const connectorTarget = {
         const y0 = Connectors[indexCout].outConnectors[item.index].top + 3 ;
         const x1 = Connectors[indexCin].inConnectors[index].left + 3;
         const y1 = Connectors[indexCin].inConnectors[index].top + 3 ;
-        let idDragI = itemSource[indexDragI].id; 
-        createLine(index,item.idOut,idDragI,item.idDragI,x0,x1,y0,y1);
+        let idDragI = itemSource[indexDragI].id;
+        console.log(item.type)
+        console.log(type)
+        debugger
+       if(item.type === type){
+            createLine(index,item.idOut,idDragI,item.idDragI,x0,x1,y0,y1);
+       }else{
+           alert('no se pueden conectar distintos tipos');
+           //component.setState({showAlert:true})
+           //setTimeout(()=>(component.setState({showAlert:false})),3000)
+       }
         
     }
 	

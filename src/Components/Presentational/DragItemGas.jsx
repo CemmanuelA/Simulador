@@ -40,7 +40,7 @@ class DragItemGas extends React.Component{
                  const leftChild = ReactDOM.findDOMNode(this.dragRefOut[i]).offsetLeft;
                  console.log(topChild,leftChild,'salida'+i)
                  updateConnectorPosition(id,i,'output',topParent+topChild,leftParent+leftChild)});
-             this.props.handleRefs(this.dragRefIn,this.dragRefOut,'gas'); 
+            this.props.handleRefs(this.dragRefIn,this.dragRefOut,index,'gas'); 
         }
 /*-------------------------------------------------------------------------------------------------------*/
     shouldComponentUpdate(nextProps, nextState) {
@@ -51,11 +51,13 @@ class DragItemGas extends React.Component{
             } 
             return false;       
     }
+/*--------------------------------------------------------------------------------------------------------*/
+
     
     render(){
-         const {connectDragSource,index,dragItemGas,createLine,Connectors,updateConnectorPosition} = this.props;
+         const {connectDragSource,index,dragItemGas,createLine,Connectors,deleteAdder} = this.props;
          const id = dragItemGas[index].id;
-         console.log(Connectors)
+         console.log(Connectors,'Connectors Gas')
         return(connectDragSource(<div style={style(dragItemGas[index])} key={index}> 
     
     							<div className='containerFlex adderInput'>
@@ -63,7 +65,8 @@ class DragItemGas extends React.Component{
                 							   {
                 							    return  <DragItemCin key={i} ref={(ref) => this.dragRefIn[i] = ref} index={i} 
                 							                         indexDragI={index} Connectors={Connectors}
-                							                         itemSource={dragItemGas} createLine={createLine}>
+                							                         itemSource={dragItemGas} createLine={createLine}
+                							                         type={dragItemGas[index].type}>
                 							             </DragItemCin>;
 
                 							   })}
@@ -75,7 +78,7 @@ class DragItemGas extends React.Component{
         							   <div><h4>{dragItemGas[index].name}</h4></div>
         							   
         							   <div className="icons">
-        							        <Glyphicon glyph="trash"/>
+        							        <Glyphicon glyph="trash" onClick={() => deleteAdder(id,index,'zone','gas')}/>
         							   </div>
     							 </div>
     							 
@@ -85,7 +88,8 @@ class DragItemGas extends React.Component{
                 							   {
                 							    return  <DragItemCout key={i} ref={(ref) => this.dragRefOut[i] = ref} index={i} 
                 							                          indexDragI={index} Connectors={Connectors}
-                							                          itemSource={dragItemGas} >
+                							                          itemSource={dragItemGas}
+                							                          type={dragItemGas[index].type}>
                 							            </DragItemCout>;   
                 							   })}
     							    </div>
@@ -201,7 +205,12 @@ const mapDispatchToProps = dispatch =>{
                             top:top,
                             left:left
             });
-        }
+        },
+        deleteAdder(id,index,source,sourceAdder){
+           dispatch({type:'DELETE_ADDER',index:index,source:sourceAdder}),
+           dispatch({type:'DELETE_CONNECTOR',id:id,idToDelete:[],source:source}),
+           dispatch({type:'DELETE_LINE',id:id})
+       }
          
     };
     

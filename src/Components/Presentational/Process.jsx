@@ -15,22 +15,22 @@ const list = (tam) =>{
 
 
 
-const Process = ({collection, handleProperties, updateMachine, deleteMachine}) => {
+const Process = ({collection, handleProperties, updateMachine, deleteMachine,dragItem}) => {
                     
-        
+  /*<Panel expanded={true} header="Otros procesos" eventKey="2" className='panelTab' bsStyle="primary"></Panel>*/      
         return(
             <div className="container">
                  <PanelGroup>
                     <Panel expanded={true} header="Máquinas" eventKey="1" className='panelTab' bsStyle="primary">
                         
                         <ListGroup>
-                        {list(collection.length).map((i) =>( <DragItemList key={i} index={i} collection={collection} handleProperties={handleProperties} 
-                                                                    deleteMachine={deleteMachine} updateMachine={updateMachine} />))}
+                        {list(collection.length).map((i) =>( <DragItemList  key={i} index={i} collection={collection} handleProperties={handleProperties} 
+                                                                            deleteMachine={deleteMachine} updateMachine={updateMachine} dragItem={dragItem}/>))}
                                                                     
                         </ListGroup>
                      
                     </Panel>
-                    <Panel expanded={true} header="Otros procesos" eventKey="2" className='panelTab' bsStyle="primary">Panel 2 content</Panel>
+                    
                     <Panel expanded={true} header="Propiedades" eventKey="3" bsStyle="primary"><Properties/></Panel>
                 </PanelGroup>
            
